@@ -92,9 +92,20 @@ function userText(c) {
   const s = c.filter(x => x && x.type === 'text').map(x => x.text || '').join('\n');
   return s || null;
 }
+// 只算人打的字：去掉系统注入的整段标签（后台任务通知、system-reminder、命令回显等），剩下空的就不算一轮
+const MACHINE_TAGS = /<(task-notification|system-reminder|local-command-stdout|local-command-stderr|local-command-caveat|command-name|command-message|command-args|bash-input|bash-stdout|bash-stderr|user-prompt-submit-hook|environment_context|user_instructions|turn_aborted)\b[^>]*>[\s\S]*?<\/\1>/g;
+const MACHINE_LINE = /^\s*(Caveat: The messages below were generated|\[Request interrupted by user|This session is being continued from a previous conversation)/;
+function humanText(s) {
+  if (typeof s !== 'string') return null;
+  if (MACHINE_LINE.test(s)) return null;
+  const t = s.replace(MACHINE_TAGS, '').trim();
+  if (!t || /^<(task-notification|system-reminder|command|local-command)/.test(t)) return null;
+  return t;
+}
 
 // ---------- Claude Code ----------
 const seen = new Set();
+const seenUser = new Set();
 let claudeFiles = 0;
 for (const dir of claudeDirs) {
   for (const f of walk(dir)) {
@@ -116,9 +127,12 @@ for (const dir of claudeDirs) {
         const m = o.message.model;
         if (m && m !== '<synthetic>') D.models[m] = (D.models[m] || 0) + 1;
         D.src.add('claude'); touch(D, t);
-      } else if (o.type === 'user' && o.message && !o.isMeta && !o.isSidechain) {
-        const s = userText(o.message.content);
-        if (!s || /^\s*<(command|local-command)/.test(s)) continue;
+      } else if (o.type === 'user' && o.message && !o.isMeta && !o.isSidechain && !o.isCompactSummary && !o.toolUseResult
+                 && (!o.userType || o.userType === 'external')) {
+        // 续接、分叉的会话会把旧消息原样抄进新文件，按 uuid 去重
+        if (o.uuid) { if (seenUser.has(o.uuid)) continue; seenUser.add(o.uuid); }
+        const s = humanText(userText(o.message.content));
+        if (!s) continue;
         const D = day(t);
         D.rounds++;
         if (HALL.test(s.slice(0, 600))) D.hall++;
@@ -155,9 +169,11 @@ for (const dir of codexDirs) {
         if (model) D.models[model] = (D.models[model] || 0) + 1;
         D.src.add('codex'); touch(D, t);
       } else if (o.type === 'event_msg' && p.type === 'user_message') {
+        const msg = humanText(p.message);
+        if (!msg) continue;
         const D = day(t);
         D.rounds++;
-        if (typeof p.message === 'string' && HALL.test(p.message.slice(0, 600))) D.hall++;
+        if (HALL.test(msg.slice(0, 600))) D.hall++;
         D.src.add('codex'); touch(D, t);
       } else if (o.type === 'response_item' && (p.type === 'function_call' || p.type === 'local_shell_call' || p.type === 'custom_tool_call')) {
         day(t).tools++;
