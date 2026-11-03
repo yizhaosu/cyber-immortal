@@ -133,19 +133,155 @@ th{color:var(--mute);font-weight:500;font-size:12px}
 #tbtn{font-size:22px;padding:14px;font-family:var(--f-disp)}
 .toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--paper);color:#2a1c05;padding:8px 16px;border-radius:999px;font-weight:700;z-index:60}
 
-@media (max-width:980px){.grid{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}.p-vault{grid-column:1/-1}.vault{grid-template-columns:repeat(auto-fill,minmax(130px,1fr))}}
+/* 山水洞府：英雄区背后的 SVG 场景，随时辰、境界和夜修值变化 */
+.hero{position:relative;overflow:hidden;isolation:isolate}
+.scene{position:absolute;inset:0;z-index:-1;pointer-events:none}
+.scene svg{width:100%;height:100%;display:block}
+@keyframes drift{from{transform:translateX(-60px)}to{transform:translateX(60px)}}
+.cloud{animation:drift 38s ease-in-out infinite alternate}
+.cloud.c2{animation-duration:52s;animation-direction:alternate-reverse}
+@keyframes blink{0%,100%{opacity:.2}50%{opacity:1}}
+.led{animation:blink 2.6s infinite}
+@keyframes twinkle{0%,100%{opacity:.25}50%{opacity:.9}}
+.star{animation:twinkle 4s infinite}
+.lgchip{color:var(--paper);border-color:rgba(233,196,106,.5);font-family:var(--f-mono)}
+
+/* 修仙之路 */
+.road{display:grid;grid-template-columns:repeat(8,minmax(0,1fr));gap:4px;position:relative;padding:2px 0}
+.road .rail,.road .fill{position:absolute;left:6.25%;top:22px;height:2px;border-radius:1px}
+.road .rail{right:6.25%;background:var(--line)}
+.road .fill{background:linear-gradient(90deg,var(--qi),var(--paper));transition:width .6s}
+.node{display:flex;flex-direction:column;align-items:center;gap:3px;position:relative;text-align:center;min-width:0}
+.node .g{width:44px;height:44px;border-radius:50%;display:grid;place-items:center;font-family:var(--f-disp);font-size:21px;border:2px solid var(--line);background:var(--ink);color:var(--mute)}
+.node.done .g{border-color:var(--paper);color:#2a1c05;background:var(--paper)}
+.node.cur .g{border-color:var(--qi);color:var(--qi);animation:pulse 2.2s infinite}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 3px rgba(126,224,230,.15),0 0 16px rgba(126,224,230,.35)}50%{box-shadow:0 0 0 7px rgba(126,224,230,.06),0 0 28px rgba(126,224,230,.6)}}
+.node b{font-weight:500;font-size:12px;white-space:nowrap}
+.node small{font-size:10px;color:var(--mute);line-height:1.25}
+.node.cur b{color:var(--qi)}
+
+/* 分页 */
+.tabs{display:flex;gap:4px;flex-wrap:wrap;border-bottom:1px solid var(--line);margin-bottom:-6px}
+.tab{border:1px solid transparent;border-bottom:0;border-radius:10px 10px 0 0;background:transparent;color:var(--mute);padding:8px 18px;position:relative;font-family:var(--f-disp);font-size:18px;letter-spacing:.08em;margin-bottom:-1px}
+.tab:hover{border-color:transparent;color:var(--fg)}
+.tab[aria-selected="true"]{color:var(--paper);border-color:var(--line);background:var(--panel)}
+.tab .dot{position:absolute;top:7px;right:7px;width:7px;height:7px;border-radius:50%;background:var(--cinnabar);box-shadow:0 0 8px var(--cinnabar)}
+
+/* 晨课 */
+.incense{display:flex;gap:14px;align-items:center}
+.incense svg{flex:none;width:64px;height:84px}
+@keyframes smoke{0%{transform:translateY(0) scaleX(1);opacity:.7}100%{transform:translateY(-18px) scaleX(1.6);opacity:0}}
+.smoke{animation:smoke 3s ease-out infinite;transform-box:fill-box;transform-origin:bottom center}
+.qian{display:grid;grid-template-columns:auto 1fr;gap:12px;align-items:stretch}
+.slip{writing-mode:vertical-rl;font-family:var(--f-disp);font-size:22px;letter-spacing:.2em;padding:10px 6px;border-radius:4px;background:linear-gradient(90deg,#c9a55a,#e9c46a 40%,#d8b25c);color:#5a1414;box-shadow:inset 0 0 0 2px rgba(90,20,20,.25),0 4px 14px rgba(0,0,0,.35);text-align:center}
+.qian .verse{font-family:var(--f-disp);font-size:17px;line-height:1.35}
+.yiji{display:grid;grid-template-columns:auto 1fr;gap:4px 8px;font-size:13px;margin-top:6px}
+.yiji .y{color:#9fe3b0;font-weight:700}
+.yiji .j{color:var(--cinnabar);font-weight:700}
+.streak{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:5px}
+.streak i{height:30px;border-radius:5px;border:1px solid var(--line);background:var(--panel2);display:grid;place-items:center;font-style:normal;font-size:11px;color:var(--mute);font-family:var(--f-mono)}
+.streak i.on{background:rgba(233,196,106,.18);border-color:var(--paper);color:var(--paper)}
+.streak i.gift{font-family:var(--f-disp);font-size:15px}
+.quests{display:flex;flex-direction:column;gap:6px}
+.q{display:grid;grid-template-columns:22px 1fr auto;gap:8px;align-items:center;padding:7px 9px;border-radius:7px;background:var(--panel2);border:1px solid var(--line)}
+.q .ck{width:18px;height:18px;border-radius:4px;border:1.5px solid var(--mute);display:grid;place-items:center;font-size:12px;line-height:1}
+.q.done{opacity:.6}
+.q.done .ck{background:var(--qi);border-color:var(--qi);color:var(--ink)}
+.q .qd{font-size:11px;color:var(--mute);display:block;line-height:1.3}
+.q .rw{font-family:var(--f-mono);font-size:12px;color:var(--paper)}
+.q.chest{border-style:dashed}
+.q.chest.done{border-color:var(--paper);opacity:1}
+
+/* 洞府 */
+.dongfu{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.4fr);gap:18px;align-items:start}
+.cave{display:flex;flex-direction:column;align-items:center;gap:10px;text-align:center}
+.cave svg{width:min(260px,100%);height:auto}
+.cave .big{font-family:var(--f-mono);font-size:22px;color:var(--qi)}
+.cave p{margin:0;font-size:12px;color:var(--mute)}
+@keyframes breathe{0%,100%{opacity:.35;transform:scale(.96)}50%{opacity:.85;transform:scale(1.04)}}
+.aura{animation:breathe 4s ease-in-out infinite;transform-box:fill-box;transform-origin:center}
+.alch{display:grid;grid-template-columns:150px minmax(0,1fr);gap:16px;align-items:start}
+.furnace svg{width:100%;height:auto}
+@keyframes flick{0%,100%{transform:scaleY(1)}50%{transform:scaleY(1.18) skewX(-3deg)}}
+.flame{animation:flick .9s ease-in-out infinite;transform-box:fill-box;transform-origin:bottom center}
+.flame.f2{animation-duration:1.3s}
+.furnace.boom svg{animation:shake .5s}
+.furnace.ok .glow{animation:pop .9s}
+@keyframes shake{0%,100%{transform:none}20%{transform:translate(-4px,2px) rotate(-2deg)}40%{transform:translate(4px,-2px) rotate(2deg)}60%{transform:translate(-3px,1px)}80%{transform:translate(2px,-1px)}}
+@keyframes pop{0%{opacity:0}30%{opacity:1}100%{opacity:0}}
+.pills{display:flex;flex-direction:column;gap:8px}
+.pill{display:grid;grid-template-columns:28px 1fr auto;gap:10px;align-items:center;padding:8px 10px;border-radius:8px;background:var(--panel2);border:1px solid var(--line)}
+.pill .orb{width:24px;height:24px;border-radius:50%;box-shadow:inset -4px -4px 8px rgba(0,0,0,.45),0 0 10px currentColor}
+.pill b{font-weight:500}
+.pill small{display:block;color:var(--mute);font-size:12px;line-height:1.3}
+.pill button{padding:6px 10px;font-size:13px;white-space:nowrap}
+.firebar{display:flex;gap:4px;align-items:center;font-size:12px;color:var(--mute)}
+.firebar i{width:14px;height:14px;border-radius:50% 50% 50% 0;transform:rotate(-45deg);background:var(--cinnabar);display:inline-block;box-shadow:0 0 6px var(--cinnabar)}
+.firebar i.off{background:var(--line);box-shadow:none}
+
+/* 藏宝阁 */
+.slots{display:flex;gap:10px;flex-wrap:wrap}
+.slot{flex:1 1 150px;min-width:0;border:1px dashed var(--line);border-radius:10px;padding:10px;display:flex;gap:10px;align-items:center;background:var(--panel2)}
+.slot img{width:40px;border-radius:3px}
+.slot.on{border-style:solid;border-color:var(--paper)}
+.slot.lock{opacity:.5}
+.slot span{font-size:12px;color:var(--mute);line-height:1.35;min-width:0}
+.slot b{display:block;color:var(--fg);font-weight:500;font-size:13px}
+.vault2{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px}
+.tr.eq{border-color:var(--paper);box-shadow:0 0 0 1px var(--paper),0 0 18px rgba(233,196,106,.2)}
+.tr .fx{font-size:12px;color:var(--qi);line-height:1.35}
+.tr .acts{display:flex;gap:6px}
+.tr .acts button{flex:1;padding:5px 6px;font-size:12px}
+.tr .acts .melt{color:var(--mute)}
+.tr .acts .melt.arm{color:#fff;background:var(--cinnabar);border-color:var(--cinnabar)}
+.vtools{display:flex;gap:8px;flex-wrap:wrap;align-items:center;justify-content:space-between}
+
+/* 图鉴 */
+.achs{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px}
+.ach{display:grid;grid-template-columns:auto 1fr;gap:10px;align-items:center;padding:8px;border-radius:8px;background:var(--panel2);border:1px solid var(--line);min-width:0}
+.seal{width:44px;height:44px;display:grid;place-items:center;font-family:var(--f-disp);font-size:26px;border-radius:6px;border:2px dashed var(--line);color:var(--line)}
+.ach.on .seal{background:var(--cinnabar);border:2px solid #ff8a8d;color:#fff3e0;transform:rotate(-4deg);box-shadow:0 2px 10px rgba(229,72,77,.4)}
+.ach b{font-weight:500;font-size:13px;display:block}
+.ach small{color:var(--mute);font-size:11px;line-height:1.3;display:block}
+.ach:not(.on) b{color:var(--mute)}
+.ledger{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:10px}
+.ledger div{border-left:2px solid var(--line);padding-left:10px}
+.ledger b{display:block;font-family:var(--f-mono);font-size:18px;color:var(--paper);font-weight:400}
+.ledger span{font-size:12px;color:var(--mute)}
+
+/* 渡劫：雷云与闪电 */
+.storm{height:46px;margin:-6px -6px 0}
+.storm svg{width:100%;height:100%}
+.tstage{position:relative}
+.bolt{position:absolute;bottom:100%;width:26px;height:70px;margin-left:-13px;opacity:0;pointer-events:none}
+.bolt.hit{animation:boltA .45s}
+.bolt.hit path{stroke:#fff;filter:drop-shadow(0 0 6px var(--cinnabar))}
+.bolt.block{animation:boltA .45s}
+.bolt.block path{stroke:var(--qi);filter:drop-shadow(0 0 6px var(--qi))}
+@keyframes boltA{0%{opacity:0}10%{opacity:1}60%{opacity:1}100%{opacity:0}}
+
+@media (max-width:980px){.grid{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}.p-daily{grid-column:1/-1}.dongfu{grid-template-columns:minmax(0,1fr)}}
 @media (max-width:640px){
   .grid{grid-template-columns:minmax(0,1fr)}
+  .p-daily{order:-1}
   .hero{grid-template-columns:minmax(0,1fr);text-align:left}
   .ava{width:132px}
   .realm{font-size:34px}
   form{grid-template-columns:minmax(0,1fr)}
+  .node small{display:none}
+  .node .g{width:34px;height:34px;font-size:17px}
+  .node b{font-size:11px}
+  .road .rail,.road .fill{top:17px}
+  .tab{padding:7px 11px;font-size:16px}
+  .alch{grid-template-columns:minmax(0,1fr)}
+  .furnace{max-width:160px;margin:0 auto}
 }
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
 
 <div class="wrap">
   <section class="hero">
+    <div class="scene" id="scene" aria-hidden="true"></div>
     <div class="ava-col">
       <img id="ava" class="ava" alt="你的法相">
       <small>长按或右键保存法相</small>
@@ -167,11 +303,24 @@ th{color:var(--mute);font-weight:500;font-size:12px}
         <button id="resetBtn" type="button">转世重修</button>
       </div>
       <p id="rankMsg" hidden style="margin:0;font-size:12px;color:var(--qi)"></p>
+      <div class="chips" id="reqs"></div>
       <div class="chips" id="titles"></div>
     </div>
   </section>
 
-  <div class="grid">
+  <section class="pane" aria-label="修仙之路">
+    <div class="road" id="road"></div>
+  </section>
+
+  <nav class="tabs" role="tablist" aria-label="分区">
+    <button class="tab" role="tab" data-tab="xx" type="button">修行<span class="dot" hidden></span></button>
+    <button class="tab" role="tab" data-tab="df" type="button">洞府<span class="dot" hidden></span></button>
+    <button class="tab" role="tab" data-tab="bg" type="button">藏宝阁<span class="dot" hidden></span></button>
+    <button class="tab" role="tab" data-tab="tj" type="button">图鉴<span class="dot" hidden></span></button>
+    <button class="tab" role="tab" data-tab="td" type="button">天道<span class="dot" hidden></span></button>
+  </nav>
+
+  <div class="grid" data-panel="xx">
     <section class="pane">
       <h2>根骨 <small>属性</small></h2>
       <div id="stats" style="display:flex;flex-direction:column;gap:12px"></div>
@@ -223,39 +372,92 @@ th{color:var(--mute);font-weight:500;font-size:12px}
       <div class="log" id="log"></div>
     </section>
 
-    <section class="pane p-vault">
-      <h2>藏宝阁 <small id="vcount">0 件</small></h2>
-      <div class="vault" id="vault"></div>
-      <p style="margin:0;font-size:12px;color:var(--mute)">每件法宝由你的道号、日期和修行数据生成，编号唯一。现在只存在你的浏览器里，还没有上链。</p>
+    <section class="pane p-daily">
+      <h2>晨课 <small id="dsub">连签 0 日</small></h2>
+      <div id="signBox"></div>
+      <div>
+        <span class="label">七日连签</span>
+        <div class="streak" id="streak" style="margin-top:6px"></div>
+      </div>
+      <div class="sep"></div>
+      <span class="label">今日三课 · 每天早上 6 点刷新</span>
+      <div class="quests" id="quests"></div>
     </section>
   </div>
 
-  <section class="pane">
+  <div class="dongfu" data-panel="df" hidden>
+    <section class="pane">
+      <h2>闭关 <small>离开的时候也在修行</small></h2>
+      <div class="cave" id="cave"></div>
+    </section>
+    <section class="pane">
+      <h2>丹房 <small id="lsTxt">灵石 0</small></h2>
+      <div class="alch">
+        <div class="furnace" id="furnace"></div>
+        <div style="display:flex;flex-direction:column;gap:10px;min-width:0">
+          <div class="firebar" id="firebar"></div>
+          <div class="pills" id="pills"></div>
+        </div>
+      </div>
+      <p style="margin:0;font-size:12px;color:var(--mute)">灵石来自每次修行、晨课和熔炼法宝。神识越高越不容易炸炉，灵根越高越容易炼出极品（药效翻倍）。</p>
+    </section>
+  </div>
+
+  <section class="pane" data-panel="bg" hidden>
+    <h2>藏宝阁 <small id="vcount">0 件</small></h2>
+    <span class="label">本命法宝 · 佩戴后生效，金丹期和化神期各多开一个法宝位</span>
+    <div class="slots" id="slots"></div>
+    <div class="sep"></div>
+    <div class="vault2" id="vault"></div>
+    <p style="margin:0;font-size:12px;color:var(--mute)">每件法宝由你的道号、日期和修行数据生成，编号唯一。用不上的可以熔炼成灵石（点两次确认）。现在只存在你的浏览器里，还没有上链。</p>
+  </section>
+
+  <div data-panel="tj" hidden style="display:flex;flex-direction:column;gap:18px">
+    <section class="pane">
+      <h2>功德簿 <small>你的修行足迹</small></h2>
+      <div class="ledger" id="ledger"></div>
+    </section>
+    <section class="pane">
+      <h2>成就图鉴 <small id="achCount">0 / 0</small></h2>
+      <div class="achs" id="achs"></div>
+    </section>
+  </div>
+
+  <section class="pane" data-panel="td" hidden>
     <h2>天道规则 <small>你的数据如何变成修为</small></h2>
     <div class="table-wrap"><table>
       <thead><tr><th>现实行为</th><th>修仙后果</th></tr></thead>
       <tbody>
-        <tr><td>消耗 Token</td><td>修为 = 60 × √(万 Token) × (1 + 灵根%)。烧得越多修得越快，但边际递减，空转刷 Token 不划算。缓存命中不计。</td></tr>
+        <tr><td>消耗 Token</td><td>修为 = 60 × √(万 Token) × (1 + 灵根%)。每天烧 80 万 Token、偶尔熬夜的重度用户，大约一周筑基、一个月金丹、三个月元婴、一年渡劫。烧得越多修得越快，但边际递减，空转刷 Token 不划算。缓存命中不计。</td></tr>
         <tr><td>熬夜</td><td>导入时按最后一次 AI 活动时间算。每晚一个时辰：修为 +15%，夜修值 +10，道心 −5。23 点前睡：道心 +8。</td></tr>
         <tr><td>对话轮数</td><td>每 50 轮灵根 +1，每 20 轮神识 +1k。</td></tr>
         <tr><td>被幻觉坑</td><td>每次幻觉抗性 +2，道心 −3。吃一堑长一智。</td></tr>
-        <tr><td>道心低于 25</td><td>心魔缠身，修为折半。唯一解药是早睡。</td></tr>
-        <tr><td>修为圆满</td><td>溢出的修为存进灵气储备，渡劫成功后灌入新境界。可以渡劫。天雷数随境界增加，道心越高安全区越宽。失败损失四成修为。</td></tr>
+        <tr><td>道心低于 25</td><td>心魔缠身，修为折半。解药是早睡，或者一颗清心丹。</td></tr>
+        <tr><td>修为圆满</td><td>每个境界分九层。修为圆满且满足这一关的道行要求（修行天数、道心、法宝、早睡等）才能渡劫，每天只能渡一次。溢出的修为存进灵气储备，渡劫成功后灌入新境界。天雷数随境界增加，道心越高安全区越宽。失败损失四成修为。</td></tr>
+        <tr><td>每天打开游戏</td><td>晨课上香求签：灵石 +10 起，连签越久越多，每满 7 日得一件法宝。签文决定今日首次修行的修为倍率。每天还有三门晨课，全部完成开宝箱。</td></tr>
+        <tr><td>离开电脑</td><td>开始闭关后，每小时约得 3% 天的修为和 1 点道心，最多累积 8 小时，回来收功。</td></tr>
       </tbody>
     </table></div>
     <div class="rules">
-      <div class="rule"><h3>八大境界</h3><p>炼气 Prompt 童子 → 筑基 上下文修士 → 金丹 Token 结丹 → 元婴 Agent 元婴 → 化神 多模态化神 → 渡劫 对齐天劫 → 大乘 千卡大乘 → 飞升 奇点。</p></div>
+      <div class="rule"><h3>八大境界</h3><p>炼气 Prompt 童子 → 筑基 上下文修士 → 金丹 Token 结丹 → 元婴 Agent 元婴 → 化神 多模态化神 → 渡劫 对齐天劫 → 大乘 千卡大乘 → 飞升 奇点。洞府里的服务器塔会随境界长高。</p></div>
       <div class="rule"><h3>法门</h3><p>剑修修为 ×1.1；文修养道心；丹青修更容易出法宝；符箓修修为 ×1.25 但伤道心；散修佛系，修为 ×0.8。</p></div>
+      <div class="rule"><h3>法宝</h3><p>剑类加修为，书类养道心，画类增掉落，符类产灵石，壶类压夜修值，塔类护渡劫。品阶越高效果越强，佩戴才生效。</p></div>
+      <div class="rule"><h3>丹房</h3><p>每天三次炉火。聚气丹给修为，清心丹回道心，安神丹压夜修值，护心丹让下次渡劫多一层金光，洗髓丹长灵根。</p></div>
       <div class="rule"><h3>数字资产</h3><p>法相随境界长出光环，熬夜多了会变成夜修魔相。每次渡劫成功必得一件灵品以上法宝，日常打卡有概率掉落。</p></div>
+      <div class="rule"><h3>排行榜</h3><p>榜上只按真实灵契里的 Token 和熬夜计算，不受天象、丹药、法宝影响，所以游戏里怎么玩都不会影响公平。</p></div>
     </div>
   </section>
 </div>
 
 <div class="ov" id="ov" hidden>
   <div class="trib" id="tribcard">
+    <div class="storm" aria-hidden="true"><svg viewBox="0 0 520 46" preserveAspectRatio="none"><defs><linearGradient id="stg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2b3157"/><stop offset="1" stop-color="#161a2e" stop-opacity="0"/></linearGradient></defs><path class="cloud" d="M-20 0H540V22C510 34 480 18 455 28S400 40 370 26 320 36 290 24 240 38 210 26 160 36 130 24 70 36 40 26L-20 30Z" fill="url(#stg)"/><path class="cloud c2" d="M-30 0H550V12C520 22 490 10 460 18S400 26 370 14 310 24 280 14 220 24 190 12 120 22 90 12 20 22-30 14Z" fill="#3a2f6a" opacity=".6"/></svg></div>
     <h2 id="ttitle">第 1 道天雷</h2>
     <div class="tinfo"><span id="tcount">0 / 5</span><span>护体金光 <span class="lives" id="tlives">●●●</span></span></div>
-    <div class="tbar"><div class="tzone" id="tzone"></div><div class="tneedle" id="tneedle"></div></div>
+    <div class="tstage">
+      <svg class="bolt" id="tbolt" viewBox="0 0 26 70" aria-hidden="true"><path d="M16 0 6 30h9L4 70l18-40h-9L20 0Z" fill="none" stroke-width="3" stroke-linejoin="round"/></svg>
+      <div class="tbar"><div class="tzone" id="tzone"></div><div class="tneedle" id="tneedle"></div></div>
+    </div>
     <div id="tmsg">雷光扫进青色安全区时，按下挡雷（或空格）。</div>
     <button id="tbtn" class="btn-main" type="button">挡 雷</button>
   </div>
@@ -265,16 +467,36 @@ th{color:var(--mute);font-weight:500;font-size:12px}
 <script>
 (()=>{
 const $=s=>document.querySelector(s);
+const $$=s=>[...document.querySelectorAll(s)];
 const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
 const num=(v,a,b)=>clamp(Number(v)||0,a,b);
 function seedNum(s){s=String(s);let h=2166136261;for(let i=0;i<s.length;i++){h^=s.charCodeAt(i);h=Math.imul(h,16777619)}return h>>>0}
 function rng(seed){let a=seedNum(seed);return()=>{a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
 function hex(seed,n){const r=rng(seed);let s='';for(let i=0;i<n;i++)s+='0123456789abcdef'[Math.floor(r()*16)];return s}
+const pad=n=>String(n).padStart(2,'0');
+function ymd(d){return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate())}
+/* 修行日从早上 6 点切换，和灵契生成器一致 */
+function today(){return ymd(new Date(Date.now()-6*36e5))}
+function shiftDay(s,k){const [y,m,d]=s.split('-').map(Number);return ymd(new Date(y,m-1,d+k))}
 
+/* 境界门槛按重度用户（每天约 1000 修为）的节奏定：约 1 周筑基、1 个月金丹、3 个月元婴、半年化神、1 年渡劫、2 年大乘、3 年半飞升。
+   days 是每个境界预计要修的天数，闭关和丹药的收益按「一天的量」折算。榜单 scripts/lib.js 的 NEED 要和这里一致。 */
 const REALMS=[
- {n:'炼气期',t:'Prompt 童子',need:300},{n:'筑基期',t:'上下文修士',need:900},{n:'金丹期',t:'Token 结丹',need:2400},
- {n:'元婴期',t:'Agent 元婴',need:6000},{n:'化神期',t:'多模态化神',need:14000},{n:'渡劫期',t:'对齐天劫',need:30000},
- {n:'大乘期',t:'千卡大乘',need:60000},{n:'飞升',t:'奇点',need:Infinity}];
+ {n:'炼气期',t:'Prompt 童子',need:7000,days:7,g:'气'},{n:'筑基期',t:'上下文修士',need:25000,days:23,g:'基'},{n:'金丹期',t:'Token 结丹',need:63000,days:60,g:'丹'},
+ {n:'元婴期',t:'Agent 元婴',need:95000,days:90,g:'婴'},{n:'化神期',t:'多模态化神',need:190000,days:180,g:'神'},{n:'渡劫期',t:'对齐天劫',need:380000,days:360,g:'劫'},
+ {n:'大乘期',t:'千卡大乘',need:600000,days:570,g:'乘'},{n:'飞升',t:'奇点',need:Infinity,g:'仙'}];
+const OLD_NEED=[300,900,2400,6000,14000,30000,60000];
+/* 修为够了还不能渡劫：每一关另有道行上的门槛 */
+const REQ=[
+ [['修行满 5 日',()=>S.day>=5],['道心不低于 40',()=>S.dx>=40]],
+ [['修行满 20 日',()=>S.day>=20],['道心不低于 50',()=>S.dx>=50],['佩戴一件法宝',()=>S.eq.length>=1]],
+ [['修行满 50 日',()=>S.day>=50],['幻觉抗性达到 40',()=>S.hj>=40],['拥有一件仙品以上法宝',()=>S.treasures.some(t=>t.rare>=2)]],
+ [['修行满 80 日',()=>S.day>=80],['子时前入睡累计 10 次',()=>S.st.early>=10],['道心不低于 60',()=>S.dx>=60]],
+ [['修行满 150 日',()=>S.day>=150],['最长连签 14 日',()=>S.sk.best>=14],['解锁 10 项成就',()=>Object.keys(S.ach).length>=10]],
+ [['修行满 300 日',()=>S.day>=300],['拥有一件神品以上法宝',()=>S.treasures.some(t=>t.rare>=3)],['道心不低于 70',()=>S.dx>=70]],
+ [['修行满 500 日',()=>S.day>=500],['解锁 16 项成就',()=>Object.keys(S.ach).length>=16],['道心不低于 80',()=>S.dx>=80]]];
+function reqs(){return S.realm>=7?[]:REQ[S.realm].map(([n,f])=>[n,!!f()])}
+function dayU(){return S.realm>=7?0:need()/REALMS[S.realm].days}
 const FA={
  code:{mul:1.1,dx:-1,lg:1,note:'剑意凌厉：修为 ×1.1，灵根 +1',pool:['飞剑','剑匣','剑穗']},
  write:{mul:1,dx:3,lg:0,note:'文心澄明：道心 +3',pool:['玉简','毫笔','砚台']},
@@ -291,22 +513,110 @@ const EVENTS=[
  {t:'一个回答从头到尾没有幻觉，你顿悟了',f:()=>{S.lg+=3;return'灵根 +3'}},
  {t:'深夜与 AI 论道，它说"你说得对"',f:()=>{S.dx+=4;return'道心 +4'}},
  {t:'风平浪静，宜修行',f:()=>''},
- {t:'免费额度到账，灵石如雨',f:c=>{c.g*=1.2;return'修为 ×1.2'}},
+ {t:'免费额度到账，灵石如雨',f:c=>{c.g*=1.2;S.ls+=15;return'修为 ×1.2，灵石 +15'}},
  {t:'误入提示注入阵法',f:c=>{S.hj+=3;S.dx-=4;c.k='bad';return'幻觉抗性 +3，道心 −4'}},
  {t:'笔记本风扇狂转如龙吟',f:()=>{S.yx+=5;return'夜修值 +5'}},
- {t:'有道友把你的 Prompt 抄走了',f:()=>{S.lg+=1;S.dx-=2;return'灵根 +1，道心 −2'}}];
+ {t:'有道友把你的 Prompt 抄走了',f:()=>{S.lg+=1;S.dx-=2;return'灵根 +1，道心 −2'}},
+ {t:'测试一次全绿，丹田温热',f:()=>{S.dx+=3;S.ls+=8;return'道心 +3，灵石 +8'}},
+ {t:'Agent 自己跑完了整个任务，你只是看着',f:c=>{c.g*=1.15;return'修为 ×1.15'}},
+ {t:'git push --force 了主干，同门侧目',f:c=>{S.dx-=5;c.k='bad';return'道心 −5'}},
+ {t:'在旧日志里捡到一枚遗落的灵石',f:()=>{S.ls+=20;return'灵石 +20'}}];
+
+/* ---------- 晨课：签、连签、每日三课 ---------- */
+const SIGNS=[
+ {n:'上上签',w:1,mul:1.3,dx:6,c:'#e9c46a',v:'紫气东来，万 Token 皆顺'},
+ {n:'上签',w:3,mul:1.15,dx:3,c:'#7ee0e6',v:'灵台清明，一次就跑通'},
+ {n:'中签',w:4,mul:1,dx:0,c:'#959bbd',v:'不温不火，宜稳扎稳打'},
+ {n:'下签',w:2,mul:.95,dx:-2,c:'#b48cff',v:'小有波折，多看一眼 diff'},
+ {n:'下下签',w:.6,mul:.9,dx:-4,c:'#e5484d',v:'水逆犯冲，今日莫碰生产库'}];
+const YI=['重构','写测试','早睡','读文档','开新对话','给 AI 道谢','清理上下文','提交代码','喝热水','回滚','写注释','关掉通知'];
+const JI=['周五上线','改生产库','相信第一个回答','熬夜','rm -rf','不看 diff','塞满上下文','硬编码密钥','跳过测试','和 AI 吵架','动别人的分支','凌晨发版'];
+const QUESTS={
+ sign:{n:'上香求签',d:'在晨课里求今日一签',r:10},
+ day:{n:'今日修行',d:'导入灵契或手动打卡一次',r:20},
+ early:{n:'子时前入定',d:'记一天 23 点前入睡的修行',r:25},
+ alch:{n:'开炉炼丹',d:'在丹房炼成一颗丹药',r:15},
+ medit:{n:'闭关收功',d:'闭关至少一刻钟后收功',r:20},
+ card:{n:'广结善缘',d:'复制一次修仙名片',r:10},
+ melt:{n:'化宝为石',d:'在藏宝阁熔炼一件法宝',r:15},
+ equip:{n:'祭炼法宝',d:'在藏宝阁佩戴一件法宝',r:10}};
+
+/* ---------- 法宝效果 ---------- */
+const KIND={飞剑:'xw',剑匣:'xw',剑穗:'xw',玉简:'dx',毫笔:'dx',砚台:'dx',画卷:'luck',铜镜:'luck',灯笼:'luck',灵符:'ls',傀儡:'ls',罗盘:'ls',葫芦:'night',拂尘:'night',茶盏:'night',宝塔:'guard',莲台:'guard',丹炉:'guard'};
+const FX={
+ xw:{v:[3,5,8,12,18],f:v=>`修为 +${v}%`},
+ dx:{v:[1,1,2,3,4],f:v=>`每次修行道心 +${v}`},
+ luck:{v:[3,5,8,12,18],f:v=>`法宝掉落 +${v}%`},
+ ls:{v:[2,3,5,8,12],f:v=>`每次修行灵石 +${v}`},
+ night:{v:[2,3,5,7,10],f:v=>`每次修行夜修值 −${v}`},
+ guard:{v:[1,2,3,4,6],f:v=>`渡劫安全区 +${v}%`}};
+const MELT=[5,15,40,100,250];
+
+/* ---------- 丹房 ---------- */
+const FIRE=3;
+const PILLS=[
+ {id:'jq',n:'聚气丹',c:'#7ee0e6',cost:()=>30+15*S.realm,d:()=>S.realm>=7?'飞升之后用不上':`立得修为 ${Math.round(dayU()*.12)}（约一天修行的一成多）`,ok:()=>S.realm<7,
+  f:m=>{const g=Math.round(dayU()*.12*m);const o=gainXw(g);return`修为 +${g}${o?'，'+o:''}`}},
+ {id:'qx',n:'清心丹',c:'#9fe3b0',cost:()=>20,d:()=>'道心 +12，驱散心魔',f:m=>{S.dx=clamp(S.dx+12*m,0,100);return`道心 +${12*m}`}},
+ {id:'am',n:'安神丹',c:'#b48cff',cost:()=>25,d:()=>'夜修值 −25，压住魔相',ok:()=>S.yx>0,f:m=>{const v=Math.min(S.yx,25*m);S.yx-=v;return`夜修值 −${v}`}},
+ {id:'hx',n:'护心丹',c:'#e9c46a',cost:()=>45,d:()=>`下次渡劫多一层护体金光（已备 ${S.shield}/2）`,ok:()=>S.shield<2&&S.realm<7,f:m=>{S.shield=Math.min(2,S.shield+m);return`下次渡劫护体金光 +${m}`}},
+ {id:'xs',n:'洗髓丹',c:'#e5484d',cost:()=>60+20*S.realm,d:()=>'灵根 +2',f:m=>{S.lg+=2*m;return`灵根 +${2*m}`}}];
+
+/* ---------- 成就 ---------- */
+const ACH=[
+ ['夜','夜之子','夜修值达到 100',()=>S.yx>=100],
+ ['焚','千万焚香','累计 1000 万 Token',()=>S.tok>=1000],
+ ['幻','幻觉免疫体','幻觉抗性达到 50',()=>S.hj>=50],
+ ['明','道心通明','道心达到 95',()=>S.dx>=95],
+ ['魔','心魔缠身','道心跌破 25',()=>S.dx<25],
+ ['识','长上下文','神识达到 100',()=>S.ss>=100],
+ ['早','早睡早起','子时前入睡 7 次',()=>S.st.early>=7],
+ ['恒','七日不辍','连续上香 7 日',()=>S.sk.best>=7],
+ ['月','月满','连续上香 30 日',()=>S.sk.best>=30],
+ ['课','晨课不辍','完成 30 门晨课',()=>S.st.quests>=30],
+ ['基','筑基','突破至筑基期',()=>S.realm>=1],
+ ['丹','结丹','突破至金丹期',()=>S.realm>=2],
+ ['婴','元婴出窍','突破至元婴期',()=>S.realm>=3],
+ ['仙','奇点','飞升',()=>S.realm>=7],
+ ['劫','九死一生','渡劫失败后再次成功',()=>S.st.tl>=1&&S.st.tw>=1],
+ ['藏','收藏癖','同时拥有 8 件法宝',()=>S.treasures.length>=8],
+ ['神','神品在手','得到一件神品法宝',()=>S.treasures.some(t=>t.rare>=3)],
+ ['混','混沌初开','得到一件混沌法宝',()=>S.treasures.some(t=>t.rare>=4)],
+ ['熔','化宝为石','熔炼 5 件法宝',()=>S.st.melts>=5],
+ ['炉','丹道小成','炼丹 10 次',()=>S.st.pills>=10],
+ ['定','入定','累计闭关 24 小时',()=>S.st.medH>=24],
+ ['富','灵石满仓','同时持有 500 灵石',()=>S.ls>=500]];
 
 const KEY='cyber-xiuxian-v1';
-function fresh(){return{name:'无名散修',seed:Math.random().toString(36).slice(2,9),realm:0,xw:0,day:0,dx:72,lg:10,ss:8,yx:0,hj:5,tok:0,cny:0,reserve:0,seen:[],treasures:[],
- log:[{d:0,k:'sys',t:'你在一台发烫的笔记本前睁开眼。此界灵气以 Token 计，熬过的每一夜都会刻进道基。',l:[]}]}}
+function fresh(){return norm({ver:2,name:'无名散修',seed:Math.random().toString(36).slice(2,9),realm:0,xw:0,day:0,dx:72,lg:10,ss:8,yx:0,hj:5,tok:0,cny:0,reserve:0,seen:[],treasures:[],
+ log:[{d:0,k:'sys',t:'你在一台发烫的笔记本前睁开眼。此界灵气以 Token 计，熬过的每一夜都会刻进道基。',l:[]}]})}
+/* 老存档补齐新字段 */
+function norm(s){
+ s.reserve=s.reserve||0;s.seen=s.seen||[];s.ls=s.ls||0;s.sk=s.sk||{last:null,n:0,best:0};
+ s.st=Object.assign({signs:0,pills:0,melts:0,medH:0,tw:0,tl:0,quests:0,early:0},s.st||{});
+ s.eq=(s.eq||[]).filter(id=>s.treasures.some(t=>t.id===id));s.shield=s.shield||0;s.med=s.med||null;s.ach=s.ach||{};
+ if((s.ver||1)<2){migrate(s)}
+ s.seenT=s.seenT==null?s.treasures.length:s.seenT;s.seenA=s.seenA==null?Object.keys(s.ach).length:s.seenA;
+ return s}
+/* 旧版门槛太低，一次导入就到金丹。按累计修为在新门槛下重新落位，只降不升，法宝和属性都保留 */
+function migrate(s){
+ s.ver=2;if(typeof s.realm!=='number'||!s.day)return;
+ let total=(s.xw||0)+(s.reserve||0);for(let i=0;i<Math.min(s.realm,7);i++)total+=OLD_NEED[i];
+ if(s.realm>=7)return;
+ let realm=0,left=total;while(realm<7&&left>=REALMS[realm].need){left-=REALMS[realm].need;realm++}
+ if(realm>=7){realm=6;left=REALMS[6].need}
+ if(realm>s.realm||(realm===s.realm))return;
+ const from=REALMS[s.realm].n;s.realm=realm;s.xw=Math.min(left,REALMS[realm].need);s.reserve=Math.max(0,left-s.xw);
+ s.log.unshift({d:s.day,k:'sys',t:`天道改制：境界门槛大幅提高，突破另需道行。你按累计修为 ${Math.round(total)} 从${from}重新落位到${REALMS[realm].n}。`,l:['法宝、属性、修行录都保留','每个境界分九层，渡劫每天只能试一次']});
+}
 let S;
-function save(){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
+function save(){checkAch();try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
 function load(){try{const v=JSON.parse(localStorage.getItem(KEY));if(v&&typeof v.realm==='number')return v}catch(e){}return null}
 
 /* ---------- art ---------- */
 function drawAvatar(){
  const c=document.createElement('canvas');c.width=c.height=480;const g=c.getContext('2d');const r=rng(S.seed);
- const night=S.yx>Math.max(60,S.dx*2.2);const calm=!night&&S.dx>=60;
+ const night=demon();const calm=!night&&S.dx>=60;
  const core=night?'#e5484d':calm?'#7ee0e6':'#b48cff';
  const bg=g.createRadialGradient(240,240,20,240,240,260);
  bg.addColorStop(0,night?'#3a1530':calm?'#123a44':'#2a2150');bg.addColorStop(1,'#0f1222');
@@ -317,6 +627,9 @@ function drawAvatar(){
   const rad=118+i*15;g.strokeStyle=`rgba(233,196,106,${.85-i*.08})`;g.lineWidth=i===0?3:2;
   g.setLineDash([4+r()*18,3+r()*10]);g.lineDashOffset=r()*40;g.beginPath();g.arc(240,240,rad,0,Math.PI*2);g.stroke()}
  g.setLineDash([]);
+ // 佩戴的法宝化作绕身的灵珠
+ eqList().forEach((t,i,a)=>{const ang=-Math.PI/2+i*2*Math.PI/a.length+.5;const x=240+Math.cos(ang)*100,y=240+Math.sin(ang)*100;
+  g.shadowColor=RARE[t.rare].c;g.shadowBlur=18;g.fillStyle=RARE[t.rare].c;g.beginPath();g.arc(x,y,9,0,7);g.fill()});
  const N=9,cs=18,ox=240-N*cs/2,oy=240-N*cs/2;g.shadowColor=core;g.shadowBlur=14;
  for(let y=0;y<N;y++)for(let x=0;x<Math.ceil(N/2);x++){
   const on=r()>.48||(x===4&&y>1&&y<7);if(!on)continue;
@@ -347,10 +660,53 @@ function drawFu(t){
  g.fillStyle='#e9c46a';g.font='700 15px "Noto Sans SC",sans-serif';g.textAlign='center';g.fillText(t.name.slice(-2),96,232);
  return fuCache[t.id]=c.toDataURL('image/png');
 }
+/* 英雄区背后的山水：远山三层、云、星月，右侧山巅一座服务器塔，境界越高塔越高 */
+let sceneKey='';
+function smooth(pts){let d=`M${pts[0][0]} ${pts[0][1]}`;for(let i=1;i<pts.length-1;i++){const mx=(pts[i][0]+pts[i+1][0])/2,my=(pts[i][1]+pts[i+1][1])/2;d+=` Q${pts[i][0].toFixed(0)} ${pts[i][1].toFixed(0)} ${mx.toFixed(0)} ${my.toFixed(0)}`}const l=pts[pts.length-1];return d+` L${l[0]} ${l[1]}`}
+function ridge(seed,base,amp,n,peakX){const r=rng(seed);const pts=[];for(let i=0;i<=n;i++){const x=i*1200/n;let y=base-r()*amp;if(peakX!=null)y-=Math.max(0,1-Math.abs(x-peakX)/260)*amp*1.2;pts.push([x,y])}return smooth(pts)+' L1200 320 L0 320 Z'}
+function drawScene(){
+ const hr=new Date().getHours();const dm=demon();
+ const key=[S.seed,S.realm,hr,dm].join('|');if(key===sceneKey)return;sceneKey=key;
+ const r=rng(S.seed+'|scene');
+ const night=hr>=20||hr<5,dawn=hr>=5&&hr<8,dusk=hr>=17&&hr<20;
+ const sky=dm?['#12050e','#3a1023']:night?['#05081a','#161c44']:dawn?['#1f1a46','#a35a78']:dusk?['#1a1840','#b8603e']:['#0c1f3e','#2c6688'];
+ const mtn=dm?['#2a0f22','#1d0a18','#12060f']:['#232a55','#191e3f','#10142b'];
+ let s=`<svg viewBox="0 0 1200 320" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg"><defs>
+ <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${sky[0]}"/><stop offset="1" stop-color="${sky[1]}"/></linearGradient>
+ <linearGradient id="veil" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#0f1222" stop-opacity=".92"/><stop offset=".55" stop-color="#0f1222" stop-opacity=".55"/><stop offset="1" stop-color="#0f1222" stop-opacity=".05"/></linearGradient>
+ <radialGradient id="halo"><stop offset="0" stop-color="${dm?'#e5484d':'#e9c46a'}" stop-opacity=".55"/><stop offset="1" stop-color="${dm?'#e5484d':'#e9c46a'}" stop-opacity="0"/></radialGradient>
+ <linearGradient id="mist" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#7ee0e6" stop-opacity="0"/><stop offset="1" stop-color="${dm?'#e5484d':'#7ee0e6'}" stop-opacity=".12"/></linearGradient>
+ </defs><rect width="1200" height="320" fill="url(#sky)"/>`;
+ if(night||dm){for(let i=0;i<70;i++)s+=`<circle class="star" cx="${(r()*1200).toFixed(0)}" cy="${(r()*170).toFixed(0)}" r="${(r()*1.4+.3).toFixed(1)}" fill="#fff" style="animation-delay:${(r()*4).toFixed(1)}s"/>`}
+ const mx=760,my=70;
+ if(night||dm)s+=`<circle cx="${mx}" cy="${my}" r="30" fill="${dm?'#ff9a9c':'#f4ecd0'}" opacity=".9"/><circle cx="${mx+12}" cy="${my-6}" r="27" fill="${sky[0]}"/>`;
+ else s+=`<circle cx="${mx}" cy="${dawn||dusk?120:60}" r="38" fill="${dawn||dusk?'#ffb37a':'#fff3c4'}" opacity=".55"/>`;
+ s+=`<path d="${ridge(S.seed+'a',150,60,9)}" fill="${mtn[0]}"/>`;
+ s+=`<g class="cloud"><ellipse cx="300" cy="170" rx="220" ry="16" fill="#fff" opacity=".06"/><ellipse cx="900" cy="150" rx="260" ry="14" fill="#fff" opacity=".05"/></g>`;
+ // 服务器塔
+ const tx=1010,tiers=Math.min(9,2+S.realm),th=17,baseY=222;
+ s+=`<path d="${ridge(S.seed+'b',230,50,7,tx)}" fill="${mtn[1]}"/>`;
+ if(S.realm>=4)s+=`<circle class="aura" cx="${tx}" cy="${baseY-tiers*th-8}" r="${40+S.realm*8}" fill="url(#halo)"/>`;
+ for(let i=0;i<tiers;i++){
+  const w=64-i*5,y=baseY-(i+1)*th,x=tx-w/2;
+  s+=`<rect x="${x+4}" y="${y+4}" width="${w-8}" height="${th-4}" fill="#0b0e1e" stroke="#3a4170" stroke-width="1"/>`;
+  s+=`<path d="M${x-8} ${y+5} Q${tx} ${y-3} ${x+w+8} ${y+5} L${x+w} ${y+7} L${x} ${y+7}Z" fill="${dm?'#5a1a2a':'#2f3770'}"/>`;
+  for(let k=0;k<Math.max(2,Math.floor((w-14)/9));k++){const c=r()<.2?(dm?'#e5484d':'#e9c46a'):(dm?'#ff6b6f':'#7ee0e6');
+   s+=`<rect class="led" x="${x+8+k*9}" y="${y+10}" width="4" height="3" fill="${c}" style="animation-delay:${(r()*2.6).toFixed(2)}s"/>`}
+ }
+ const topY=baseY-tiers*th;
+ s+=`<line x1="${tx}" y1="${topY}" x2="${tx}" y2="${topY-22}" stroke="#3a4170" stroke-width="2"/><circle class="led" cx="${tx}" cy="${topY-24}" r="3" fill="${dm?'#e5484d':'#e9c46a'}"/>`;
+ s+=`<path d="${ridge(S.seed+'c',300,40,11)}" fill="${mtn[2]}"/>`;
+ s+=`<rect y="200" width="1200" height="120" fill="url(#mist)"/>`;
+ s+=`<g class="cloud c2"><ellipse cx="560" cy="250" rx="300" ry="18" fill="#fff" opacity=".05"/><ellipse cx="1100" cy="270" rx="200" ry="12" fill="#fff" opacity=".05"/></g>`;
+ s+=`<rect width="1200" height="320" fill="url(#veil)"/></svg>`;
+ $('#scene').innerHTML=s;
+}
+function demon(){return S.yx>Math.max(60,S.dx*2.2)}
 
 /* ---------- logic ---------- */
 function mint(src,min){
- const id='0x'+hex(S.seed+'|'+S.name+'|'+S.day+'|'+S.treasures.length+'|'+src,16);
+ const id='0x'+hex(S.seed+'|'+S.name+'|'+S.day+'|'+S.treasures.length+'|'+src+'|'+(S.st.signs+S.st.quests),16);
  const r=rng(id);const roll=r()+S.realm*.04+(min?.25:0);
  let rare=roll>1.18?4:roll>.98?3:roll>.86?2:roll>.6?1:0;if(min)rare=Math.max(rare,min);
  const pool=(FA[src]||{pool:['宝塔','莲台','丹炉']}).pool;
@@ -358,6 +714,90 @@ function mint(src,min){
  S.treasures.unshift(t);return t;
 }
 function need(){return REALMS[S.realm].need}
+function gainXw(g){
+ if(S.realm>=7)return'';
+ const into=Math.min(Math.max(0,need()-S.xw),g);S.xw+=into;
+ if(g>into){S.reserve+=g-into;return`${g-into} 点灵气存入储备`}return'';
+}
+function kindOf(t){return KIND[t.name.slice(-2)]||'guard'}
+function fxText(t){const k=kindOf(t);return FX[k].f(FX[k].v[t.rare])+(k==='guard'&&t.rare>=3?'，护体金光 +1':'')}
+function eqList(){return S.eq.map(id=>S.treasures.find(t=>t.id===id)).filter(Boolean)}
+function bonus(k){return eqList().filter(t=>kindOf(t)===k).reduce((a,t)=>a+FX[k].v[t.rare],0)}
+function slots(){return 1+(S.realm>=2)+(S.realm>=4)}
+
+function D(){
+ const t=today();
+ if(!S.dl||S.dl.date!==t){
+  const r=rng(S.seed+'|q|'+t);const ids=Object.keys(QUESTS).filter(k=>k!=='sign');const pick=[];
+  while(pick.length<2){const k=ids[Math.floor(r()*ids.length)];if(!pick.includes(k))pick.push(k)}
+  S.dl={date:t,sign:null,q:['sign',...pick],done:{},chest:false,fire:0,first:false};
+ }
+ return S.dl;
+}
+function quest(id){
+ const d=D();if(!d.q.includes(id)||d.done[id])return;
+ d.done[id]=1;const Q=QUESTS[id];S.ls+=Q.r;S.st.quests++;toast(`晨课「${Q.n}」完成，灵石 +${Q.r}`);
+ if(!d.chest&&d.q.every(k=>d.done[k])){
+  d.chest=true;S.ls+=30;let extra='';
+  if(rng(S.seed+'|chest|'+d.date)()<.5){const t=mint('chest',1);extra=`，开出${RARE[t.rare].n}法宝「${t.name}」`}
+  S.log.unshift({d:S.day,k:'drop',t:`晨课圆满，开宝箱：灵石 +30${extra}`,l:[]});
+  setTimeout(()=>toast('三课圆满，宝箱已开'),2300);
+ }
+}
+function drawSign(){
+ const d=D();if(d.sign)return;
+ const r=rng(S.seed+'|sign|'+d.date);
+ let x=r()*SIGNS.reduce((a,s)=>a+s.w,0),i=0;for(;i<SIGNS.length-1;i++){x-=SIGNS[i].w;if(x<0)break}
+ const two=a=>{const i1=Math.floor(r()*a.length);let i2=Math.floor(r()*(a.length-1));if(i2>=i1)i2++;return[a[i1],a[i2]]};
+ d.sign={i,yi:two(YI),ji:two(JI)};
+ const k=S.sk;k.n=k.last===shiftDay(d.date,-1)?k.n+1:1;k.last=d.date;k.best=Math.max(k.best,k.n);S.st.signs++;
+ const s=SIGNS[i];S.dx=clamp(S.dx+s.dx,0,100);const ls=10+5*Math.min(k.n-1,6);S.ls+=ls;
+ S.log.unshift({d:S.day,k:'ev',t:`晨起上香，求得${s.n}：${s.v}`,l:[`连签 ${k.n} 日，灵石 +${ls}`,s.dx?`道心 ${s.dx>0?'+':'−'}${Math.abs(s.dx)}`:'',s.mul!==1?`今日首次修行 修为 ×${s.mul}`:''].filter(Boolean)});
+ if(k.n%7===0){const t=mint('chest',k.n>=28?2:1);S.log.unshift({d:S.day,k:'drop',t:`连签 ${k.n} 日，祖师赐下${RARE[t.rare].n}法宝「${t.name}」`,l:[]})}
+ quest('sign');save();render();
+}
+function toggleEq(id){
+ const i=S.eq.indexOf(id);
+ if(i>=0)S.eq.splice(i,1);
+ else{if(S.eq.length>=slots()){toast(`法宝位已满（${slots()} 个），先卸下一件`);return}S.eq.push(id);quest('equip')}
+ save();render();
+}
+function melt(id){
+ const i=S.treasures.findIndex(t=>t.id===id);if(i<0||S.eq.includes(id))return;
+ const t=S.treasures[i];S.treasures.splice(i,1);S.seenT=Math.min(S.seenT,S.treasures.length);S.ls+=MELT[t.rare];S.st.melts++;
+ S.log.unshift({d:S.day,k:'drop',t:`熔炼${RARE[t.rare].n}法宝「${t.name}」，得灵石 ${MELT[t.rare]}`,l:[]});
+ quest('melt');save();render();toast(`灵石 +${MELT[t.rare]}`);
+}
+function brew(id){
+ const P=PILLS.find(p=>p.id===id);const d=D();if(!P)return;
+ if(d.fire>=FIRE){toast('今日炉火已尽，明早再炼');return}
+ if(P.ok&&!P.ok()){toast('现在用不上这颗丹');return}
+ const cost=P.cost();if(S.ls<cost){toast(`灵石不够，还差 ${cost-S.ls}`);return}
+ S.ls-=cost;d.fire++;S.st.pills++;
+ const roll=Math.random(),fail=Math.max(.02,.1-S.ss/2000),best=.1+Math.min(.12,S.lg/800);
+ let msg,k='ev';
+ if(roll<fail){msg=`炸炉了，${P.n}化作一缕青烟`;k='bad'}
+ else{const m=roll>1-best?2:1;msg=`${m===2?'极品':''}${P.n}出炉：${P.f(m)}`;quest('alch')}
+ S.log.unshift({d:S.day,k,t:'丹房：'+msg,l:[`耗灵石 ${cost}`]});
+ save();render();toast(msg);
+ const fu=$('#furnace');fu.classList.remove('ok','boom');void fu.offsetWidth;fu.classList.add(k==='bad'?'boom':'ok');
+}
+const MED_MAX=8;
+function medState(){if(!S.med)return null;const h=clamp((Date.now()-S.med)/36e5,0,MED_MAX);return{h,g:Math.round(h*dayU()*.03),dx:Math.floor(h)}}
+function fmtH(h){const m=Math.floor(h*60);return m<60?`${m} 分钟`:`${Math.floor(m/60)} 小时 ${m%60} 分`}
+function medToggle(){
+ if(!S.med){if(S.realm>=7){toast('飞升之人无需闭关');return}S.med=Date.now();save();render();toast('入定，开始闭关');return}
+ const m=medState();if(m.h<.25){toast('闭关不足一刻钟，再坐一会');return}
+ const o=gainXw(m.g);S.dx=clamp(S.dx+m.dx,0,100);S.st.medH+=m.h;S.med=null;
+ S.log.unshift({d:S.day,k:'ev',t:`闭关 ${fmtH(m.h)}，收功出关`,l:[`修为 +${m.g}${o?'，'+o:''}`,m.dx?`道心 +${m.dx}`:''].filter(Boolean)});
+ quest('medit');save();render();toast(`出关，修为 +${m.g}`);
+}
+function checkAch(){
+ for(const [g,n] of ACH.filter(a=>!S.ach[a[1]]&&a[3]())){
+  S.ach[n]=S.day||1;S.ls+=20;S.log.unshift({d:S.day,k:'trib',t:`解锁成就「${n}」，灵石 +20`,l:[]});toast(`成就解锁：${n}`);
+ }
+}
+
 function checkin(e){
  e.preventDefault();
  if(S.realm>=7){toast('你已飞升，凡间数据伤不到你了');return}
@@ -370,18 +810,26 @@ function applyDay(o){
  L.push(`焚 ${tok} 万 Token${o.cache?`（另有缓存命中 ${o.cache} 万，不计）`:''}，基础修为 ${Math.round(c.g)}`);
  if(o.date)L.push(`对话 ${rounds} 轮${o.model?'，主用 '+o.model:''}${o.late>0?'，最后一次活动在 '+lateClock(o.late):''}`);
  if(late>0){c.g*=1+.15*late;S.yx+=late*10;S.dx-=late*5;L.push(`月下夜修 ${late} 个时辰：修为 +${late*15}%，夜修值 +${late*10}，道心 −${late*5}`)}
- else{S.dx+=8;L.push('子时前入定：道心 +8')}
+ else{S.dx+=8;S.st.early++;L.push('子时前入定：道心 +8');quest('early')}
  if(hall>0){S.hj+=hall*2;S.dx-=hall*3;L.push(`识破幻觉 ${hall} 次：幻觉抗性 +${hall*2}，道心 −${hall*3}`)}
  S.lg+=rounds/50;S.ss+=rounds/20;
  const F=FA[fa];c.g*=F.mul;S.dx+=F.dx;S.lg+=F.lg;L.push(F.note);
+ const d=D();
+ if(d.sign&&!d.first){d.first=true;const s=SIGNS[d.sign.i];if(s.mul!==1){c.g*=s.mul;L.push(`${s.n}加持：修为 ×${s.mul}`)}}
+ const bx=bonus('xw'),bd=bonus('dx'),bn=bonus('night'),bl=bonus('ls');
+ if(bx){c.g*=1+bx/100;L.push(`法宝加持：修为 +${bx}%`)}
+ if(bd){S.dx+=bd;L.push(`法宝养心：道心 +${bd}`)}
+ if(bn&&S.yx>0){const v=Math.min(S.yx,bn);S.yx-=v;L.push(`法宝镇魔：夜修值 −${v}`)}
  const ev=EVENTS[Math.floor(r()*EVENTS.length)];const evr=ev.f(c);
  S.dx=clamp(S.dx,0,100);
- if(S.dx<25){c.g*=.5;c.k='bad';L.push('心魔缠身，修为折半。今晚早点睡。')}
+ if(S.dx<25){c.g*=.5;c.k='bad';L.push('心魔缠身，修为折半。今晚早点睡，或者去丹房炼颗清心丹。')}
  const g=Math.round(c.g);
- if(S.realm<7){const room=need()-S.xw;const into=Math.min(room,g);S.xw+=into;if(g>into){S.reserve=(S.reserve||0)+g-into;L.push(`修为已至圆满，${g-into} 点灵气存入储备，渡劫后灌入新境界。`)}}
+ const o2=gainXw(g);if(o2)L.push(`修为已至圆满，${o2}，渡劫后灌入新境界。`);
+ const ls=Math.round(5+Math.sqrt(tok)*2)+bl;S.ls+=ls;L.push(`得灵石 ${ls}`);
  S.tok=Math.round((S.tok+tok)*10)/10;S.cny+=tok*.6;
  S.log.unshift({d:S.day,date:o.date,k:c.k,t:`天象：${ev.t}${evr?'（'+evr+'）':''}`,gain:g,l:L});
- if(r()<.3+(F.luck||0)){const t=mint(fa,0);S.log.unshift({d:S.day,date:o.date,k:'drop',t:`机缘：拾得 ${RARE[t.rare].n}法宝「${t.name}」`,l:[]})}
+ if(r()<.3+(F.luck||0)+bonus('luck')/100){const t=mint(fa,0);S.log.unshift({d:S.day,date:o.date,k:'drop',t:`机缘：拾得 ${RARE[t.rare].n}法宝「${t.name}」`,l:[]})}
+ quest('day');
  return g;
 }
 function lateClock(h){const m=Math.round((23+h)*60)%1440;return `${String(Math.floor(m/60)).padStart(2,'0')}:${String(m%60).padStart(2,'0')}`}
@@ -418,27 +866,39 @@ function demoSeal(){
  const sample=[[42,180,2.5,3,'code'],[18,60,0,0,'code'],[95,310,4.2,6,'agent'],[30,140,1.1,1,'code'],[260,520,5.8,9,'agent']];
  return JSON.stringify({v:1,app:'cyber-xiuxian',days:sample.map((x,i)=>({d:'demo-'+(i+1),tok:x[0],r:x[1],late:x[2],h:x[3],fa:x[4],m:'示例模型'}))});
 }
-function titles(){
- return [
-  ['夜之子',S.yx>=100],['千万焚香',S.tok>=1000],['幻觉免疫体',S.hj>=50],['道心通明',S.dx>=95],
-  ['收藏癖',S.treasures.length>=8],['长上下文',S.ss>=100],['心魔缠身',S.dx<25]];
-}
-function stage(){const p=S.xw/need();if(S.realm>=7)return'圆满';return p>=1?'圆满':p>=.66?'后期':p>=.33?'中期':'初期'}
+const CN='一二三四五六七八九';
+function stage(){if(S.realm>=7)return'圆满';const p=S.xw/need();return p>=1?'大圆满':`第${CN[Math.min(8,Math.floor(p*9))]}层`}
 
 /* ---------- render ---------- */
 function esc(s){return String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]))}
+let tab='xx';try{tab=localStorage.getItem('cyber-xiuxian-tab')||'xx'}catch(e){}
+function setTab(t){
+ tab=t;try{localStorage.setItem('cyber-xiuxian-tab',t)}catch(e){}
+ if(t==='bg')S.seenT=S.treasures.length;
+ if(t==='tj')S.seenA=Object.keys(S.ach).length;
+ save();render();
+}
 function render(){
- const R=REALMS[S.realm];
+ const R=REALMS[S.realm];D();
  if(document.activeElement!==$('#nm'))$('#nm').value=S.name;
  $('#dayno').textContent=`第 ${S.day} 日`;
  $('#realm').innerHTML=`${R.n}<span>${R.t} · ${stage()}</span>`;
- const full=S.realm<7&&S.xw>=need();
+ const full=S.realm<7&&S.xw>=need();const rq=reqs();const rqOk=rq.every(x=>x[1]);const tried=S.dl.trib;
  $('#xwfill').style.width=(S.realm>=7?100:clamp(S.xw/need()*100,0,100))+'%';
  $('#xwtxt').textContent=S.realm>=7?'修为 ∞':`修为 ${S.xw} / ${need()}`;
- $('#xwhint').textContent=(S.realm>=7?'你已飞升，成为了奇点本身':full?'修为圆满，天雷已在云层里酝酿':'导入灵契或打卡来积累修为')+(S.reserve>0&&S.realm<7?` · 灵气储备 ${S.reserve}`:'');
- $('#tribBtn').disabled=!full;
- $('#tribBtn').textContent=full?`渡劫（${5+S.realm} 道天雷）`:'渡劫';
- $('#titles').innerHTML=titles().map(([n,on])=>`<span class="chip${on?' on':''}">${on?'':'未解锁 · '}${n}</span>`).join('');
+ $('#xwhint').textContent=(S.realm>=7?'你已飞升，成为了奇点本身':full?(rqOk?(tried?'今日已渡过一次劫，明早再来':'修为圆满，天雷已在云层里酝酿'):'修为圆满，但道行未到'):'导入灵契、打卡或闭关来积累修为')+(S.reserve>0&&S.realm<7?` · 灵气储备 ${S.reserve}`:'');
+ $('#tribBtn').disabled=!(full&&rqOk&&!tried);
+ $('#tribBtn').textContent=full&&rqOk?(tried?'明日再渡劫':`渡劫（${5+S.realm} 道天雷）`):'渡劫';
+ $('#reqs').innerHTML=rq.length?`<span class="label" style="letter-spacing:.06em">突破${REALMS[S.realm+1].n}还需</span>`+[[`修为圆满（${Math.min(100,Math.floor(S.xw/need()*100))}%）`,full],...rq].map(([n,ok])=>`<span class="chip${ok?' on':''}">${ok?'✓ ':''}${n}</span>`).join(''):'';
+ const achOn=ACH.filter(a=>S.ach[a[1]]).map(a=>a[1]);
+ $('#titles').innerHTML=`<span class="chip lgchip">灵石 ${S.ls}</span><span class="chip${S.sk.n?' on':''}">连签 ${S.sk.n} 日</span>${S.shield?`<span class="chip on">护心丹 ×${S.shield}</span>`:''}${demon()?'<span class="chip" style="color:var(--cinnabar);border-color:var(--cinnabar)">夜修魔相</span>':''}`+achOn.slice(-4).map(n=>`<span class="chip on">${n}</span>`).join('');
+ renderRoad();
+ // tabs
+ $$('.tab').forEach(b=>{const on=b.dataset.tab===tab;b.setAttribute('aria-selected',on);b.tabIndex=on?0:-1});
+ $$('[data-panel]').forEach(p=>p.hidden=p.dataset.panel!==tab);
+ const m=medState();
+ const dots={xx:!S.dl.sign,df:!S.med||m.h>=MED_MAX,bg:S.treasures.length>S.seenT,tj:Object.keys(S.ach).length>S.seenA,td:false};
+ $$('.tab').forEach(b=>b.querySelector('.dot').hidden=!dots[b.dataset.tab]||b.dataset.tab===tab);
  const st=[
   ['道心',S.dx,100,S.dx<25?'心魔缠身，修为折半':S.dx>=70?'渡劫时多一层护体金光':'熬夜和幻觉会磨损它'],
   ['灵根',Math.round(S.lg),100,`修为加成 +${Math.round(S.lg)}%`],
@@ -449,11 +909,84 @@ function render(){
  $('#tok').textContent=`${(+S.tok).toLocaleString()} 万 Token`;
  $('#cny').textContent=`约焚灵石 ¥${Math.round(S.cny).toLocaleString()}（按 ¥0.6/万 Token 估算）`;
  $('#log').innerHTML=S.log.slice(0,40).map(e=>`<div class="entry k-${e.k}"><div class="d">第 ${e.d} 日${e.date?' · '+e.date:''}${e.gain!=null?` · <span class="gain">修为 +${e.gain}</span>`:''}</div><div>${esc(e.t)}</div>${e.l&&e.l.length?`<ul>${e.l.map(x=>`<li>${esc(x)}</li>`).join('')}</ul>`:''}</div>`).join('');
- $('#vcount').textContent=`${S.treasures.length} 件`;
- $('#vault').innerHTML=S.treasures.length?S.treasures.map(t=>`<div class="tr"><img src="${drawFu(t)}" alt="${esc(t.name)}"><span class="tn">${esc(t.name)}</span><span class="rare" style="color:${RARE[t.rare].c}">${RARE[t.rare].n} · 第 ${t.day} 日 · ${REALMS[t.realm].n}</span><span class="ti" title="${t.id}">${t.id}</span></div>`).join(''):
-  `<div class="empty" style="grid-column:1/-1">还没有法宝。日常打卡有三成机缘掉落，渡劫成功必得一件。</div>`;
+ renderDaily();renderDongfu();renderVault();renderTj();
  renderRank();
- drawAvatar();
+ drawAvatar();drawScene();
+}
+function renderRoad(){
+ const p=S.realm>=7?1:(S.realm+clamp(S.xw/need(),0,1))/7;
+ $('#road').innerHTML=`<i class="rail"></i><i class="fill" style="width:${(p*87.5).toFixed(2)}%"></i>`+REALMS.map((R,i)=>`<div class="node${i<S.realm?' done':i===S.realm?' cur':''}" title="${R.n} · ${R.t}"><span class="g">${R.g}</span><b>${R.n.replace('期','')}</b><small>${R.t}</small></div>`).join('');
+}
+const INCENSE=`<svg viewBox="0 0 64 84" aria-hidden="true"><path class="smoke" d="M22 30c-4-6 4-10 0-16" stroke="#cfd3ea" stroke-width="2" fill="none" opacity=".6"/><path class="smoke" style="animation-delay:1s" d="M32 26c-4-6 4-10 0-16" stroke="#cfd3ea" stroke-width="2" fill="none" opacity=".6"/><path class="smoke" style="animation-delay:2s" d="M42 30c-4-6 4-10 0-16" stroke="#cfd3ea" stroke-width="2" fill="none" opacity=".6"/><line x1="22" y1="32" x2="24" y2="62" stroke="#c4352f" stroke-width="2.5"/><line x1="32" y1="28" x2="32" y2="62" stroke="#c4352f" stroke-width="2.5"/><line x1="42" y1="32" x2="40" y2="62" stroke="#c4352f" stroke-width="2.5"/><circle cx="22" cy="32" r="2" fill="#ffb37a"/><circle cx="32" cy="28" r="2" fill="#ffb37a"/><circle cx="42" cy="32" r="2" fill="#ffb37a"/><path d="M8 60h48l-6 18H14Z" fill="#8a6a2a"/><rect x="6" y="56" width="52" height="7" rx="3" fill="#e9c46a"/></svg>`;
+function renderDaily(){
+ const d=S.dl;const k=S.sk;
+ const broken=k.last&&k.last!==d.date&&k.last!==shiftDay(d.date,-1);
+ $('#dsub').textContent=`连签 ${k.n} 日 · 最长 ${k.best} 日`;
+ if(!d.sign){
+  $('#signBox').innerHTML=`<div class="incense">${INCENSE}<div style="display:flex;flex-direction:column;gap:8px;min-width:0"><span style="font-size:13px;color:var(--mute)">${broken?`上回连签 ${k.n} 日已断，今天从头再来。`:k.n?`已连签 ${k.n} 日，今天上香得灵石 ${10+5*Math.min(k.n,6)}。`:'每天上一炷香，求一支赛博签。'}</span><button class="btn-main" id="signBtn" type="button">上香求签</button></div></div>`;
+ }else{
+  const s=SIGNS[d.sign.i];
+  $('#signBox').innerHTML=`<div class="qian"><div class="slip" style="color:${s.i>2?'#5a1414':'#5a1414'}">${s.n}</div><div style="min-width:0"><div class="verse" style="color:${s.c}">${s.v}</div><div class="yiji"><span class="y">宜</span><span>${d.sign.yi.join(' · ')}</span><span class="j">忌</span><span>${d.sign.ji.join(' · ')}</span></div><div style="font-size:12px;color:var(--mute);margin-top:6px">${s.mul!==1?`今日首次修行 修为 ×${s.mul}${d.first?'（已生效）':''}`:'今日无加成'}</div></div></div>`;
+ }
+ const cyc=k.n?((k.n-1)%7)+1:0;const live=d.sign||!broken?cyc:0;
+ $('#streak').innerHTML=Array.from({length:7},(_,i)=>i===6?`<i class="gift${i<live?' on':''}" title="满 7 日得法宝">宝</i>`:`<i class="${i<live?'on':''}">${i+1}</i>`).join('');
+ $('#quests').innerHTML=d.q.map(id=>{const Q=QUESTS[id],ok=d.done[id];return`<div class="q${ok?' done':''}"><span class="ck">${ok?'✓':''}</span><span>${Q.n}<span class="qd">${Q.d}</span></span><span class="rw">+${Q.r}</span></div>`}).join('')+
+  `<div class="q chest${d.chest?' done':''}"><span class="ck">${d.chest?'✓':''}</span><span>三课圆满<span class="qd">灵石 +30，一半机会开出法宝</span></span><span class="rw">宝箱</span></div>`;
+}
+function caveSVG(p,full){
+ const C=2*Math.PI*62;
+ return `<svg viewBox="0 0 260 220" aria-hidden="true"><defs><radialGradient id="cv"><stop offset="0" stop-color="#1c2140"/><stop offset="1" stop-color="#0b0e1e"/></radialGradient><radialGradient id="au"><stop offset="0" stop-color="#7ee0e6" stop-opacity=".55"/><stop offset="1" stop-color="#7ee0e6" stop-opacity="0"/></radialGradient></defs>
+ <path d="M0 220V120C0 40 60 6 130 6s130 34 130 114v100Z" fill="#232a55"/><path d="M28 220V128C28 62 74 30 130 30s102 32 102 98v92Z" fill="url(#cv)"/>
+ <path d="M60 52l6 14M200 50l-5 16M110 34l2 12M160 36l-3 12" stroke="#3a4170" stroke-width="3" stroke-linecap="round"/>
+ ${S.med?'<circle class="aura" cx="130" cy="128" r="70" fill="url(#au)"/>':''}
+ <circle cx="130" cy="128" r="62" fill="none" stroke="#2b3157" stroke-width="5"/>
+ <circle cx="130" cy="128" r="62" fill="none" stroke="${full?'#e9c46a':'#7ee0e6'}" stroke-width="5" stroke-linecap="round" stroke-dasharray="${(C*p).toFixed(1)} ${C.toFixed(1)}" transform="rotate(-90 130 128)"/>
+ <circle cx="130" cy="98" r="13" fill="#e9e7f2"/><path d="M130 112c-18 0-26 14-27 30h54c-1-16-9-30-27-30Z" fill="#e9e7f2"/>
+ <path d="M92 158c10-12 26-16 38-16s28 4 38 16c-12 6-26 8-38 8s-26-2-38-8Z" fill="#c9cde6"/>
+ <path d="M112 136c6 6 12 8 18 8s12-2 18-8" stroke="#959bbd" stroke-width="2" fill="none"/>
+ <ellipse cx="130" cy="176" rx="54" ry="8" fill="#b48cff" opacity=".35"/><path d="M84 176c10-10 22-4 26 0 4-6 16-10 20-2 4-8 16-4 20 2 4-4 16-10 26 0" stroke="#b48cff" stroke-width="2" fill="none"/>
+ ${S.med?'<text x="130" y="60" text-anchor="middle" fill="#7ee0e6" font-size="13" font-family="JetBrains Mono,monospace" opacity=".8">Zzz</text>':''}
+ </svg>`;
+}
+function renderDongfu(){
+ const m=medState();
+ if(!m){
+  $('#cave').innerHTML=caveSVG(0,false)+`<div class="big">未闭关</div><p>去睡觉、去吃饭、去开会前点一下。每小时得约 3% 天的修为和 1 点道心，最多累积 8 小时。</p><button class="btn-main" id="medBtn" type="button">开始闭关</button>`;
+ }else{
+  const full=m.h>=MED_MAX;
+  $('#cave').innerHTML=caveSVG(m.h/MED_MAX,full)+`<div class="big">${fmtH(m.h)}</div><p>${full?'已满 8 小时，灵气不再增长，快收功':'已凝聚'} 修为 ${m.g} · 道心 +${m.dx}</p><button class="${full?'btn-main':''}" id="medBtn" type="button">收功出关</button>`;
+ }
+ $('#lsTxt').textContent=`灵石 ${S.ls}`;
+ const d=S.dl;
+ $('#firebar').innerHTML=`今日炉火 `+Array.from({length:FIRE},(_,i)=>`<i class="${i<FIRE-d.fire?'':'off'}"></i>`).join('')+` <span style="margin-left:4px">${FIRE-d.fire} / ${FIRE}</span>`;
+ if(!$('#furnace').firstChild)$('#furnace').innerHTML=`<svg viewBox="0 0 150 170" aria-hidden="true"><defs><radialGradient id="fg"><stop offset="0" stop-color="#ffd27a" stop-opacity=".9"/><stop offset="1" stop-color="#e5484d" stop-opacity="0"/></radialGradient><linearGradient id="br" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#6b4a1a"/><stop offset=".5" stop-color="#c99a45"/><stop offset="1" stop-color="#6b4a1a"/></linearGradient></defs>
+  <circle class="glow" cx="75" cy="40" r="44" fill="url(#fg)" opacity="0"/>
+  <path d="M52 20h46l-6 12H58Z" fill="url(#br)"/><circle cx="75" cy="16" r="6" fill="#c99a45"/>
+  <path d="M34 40h82c6 0 10 6 8 12l-6 56c-1 10-10 16-20 16H52c-10 0-19-6-20-16l-6-56c-2-6 2-12 8-12Z" fill="url(#br)"/>
+  <path d="M30 56h-12c-6 0-6 12 0 12h10M120 56h12c6 0 6 12 0 12h-10" stroke="#8a6a2a" stroke-width="5" fill="none"/>
+  <rect x="50" y="62" width="50" height="34" rx="6" fill="#2a1408"/><path d="M60 96c4-10 8-18 15-26 7 8 11 16 15 26Z" fill="#e5484d" class="flame"/><path d="M66 96c3-7 6-11 9-16 3 5 6 9 9 16Z" fill="#ffd27a" class="flame f2"/>
+  <text x="75" y="118" text-anchor="middle" font-size="12" fill="#2a1c05" font-family="ZCOOL QingKe HuangYou,sans-serif">丹</text>
+  <path d="M46 124l-8 30M104 124l8 30M75 124v30" stroke="#6b4a1a" stroke-width="7" stroke-linecap="round"/>
+  <path d="M28 160c20-12 74-12 94 0" stroke="#e5484d" stroke-width="4" fill="none" class="flame" opacity=".7"/></svg>`;
+ $('#pills').innerHTML=PILLS.map(P=>{const cost=P.cost();const can=d.fire<FIRE&&S.ls>=cost&&(!P.ok||P.ok());
+  return`<div class="pill"><span class="orb" style="background:${P.c};color:${P.c}"></span><span style="min-width:0"><b>${P.n}</b><small>${P.d()}</small></span><button type="button" data-brew="${P.id}"${can?'':' disabled'}>${cost} 灵石</button></div>`}).join('');
+}
+function renderVault(){
+ $('#vcount').textContent=`${S.treasures.length} 件`;
+ const eq=eqList();
+ $('#slots').innerHTML=[0,1,2].map(i=>{
+  if(i>=slots())return`<div class="slot lock"><span><b>未开启</b>${i===1?'金丹期':'化神期'}开启</span></div>`;
+  const t=eq[i];return t?`<div class="slot on"><img src="${drawFu(t)}" alt=""><span><b style="color:${RARE[t.rare].c}">${esc(t.name)}</b>${fxText(t)}</span></div>`:`<div class="slot"><span><b>空</b>在下面挑一件佩戴</span></div>`}).join('');
+ $('#vault').innerHTML=S.treasures.length?S.treasures.map(t=>{const on=S.eq.includes(t.id);
+  return`<div class="tr${on?' eq':''}"><img src="${drawFu(t)}" alt="${esc(t.name)}"><span class="tn">${esc(t.name)}</span><span class="rare" style="color:${RARE[t.rare].c}">${RARE[t.rare].n} · 第 ${t.day} 日 · ${REALMS[t.realm].n}</span><span class="fx">${fxText(t)}</span><span class="ti" title="${t.id}">${t.id}</span><div class="acts"><button type="button" data-eq="${t.id}">${on?'卸下':'佩戴'}</button>${on?'':`<button type="button" class="melt" data-melt="${t.id}">熔 +${MELT[t.rare]}</button>`}</div></div>`}).join(''):
+  `<div class="empty" style="grid-column:1/-1">还没有法宝。日常修行有三成机缘掉落，连签七日、晨课宝箱、渡劫成功都会得到。</div>`;
+}
+function renderTj(){
+ const on=ACH.filter(a=>S.ach[a[1]]).length;
+ $('#achCount').textContent=`${on} / ${ACH.length}`;
+ $('#achs').innerHTML=ACH.map(([g,n,d])=>`<div class="ach${S.ach[n]?' on':''}"><span class="seal">${g}</span><span style="min-width:0"><b>${n}</b><small>${S.ach[n]?`第 ${S.ach[n]} 日解锁 · `:''}${d}</small></span></div>`).join('');
+ const L=[[S.day,'修行日'],[S.st.signs,'上香次数'],[S.sk.best,'最长连签'],[S.st.quests,'完成晨课'],[S.st.pills,'开炉炼丹'],[S.st.melts,'熔炼法宝'],[Math.round(S.st.medH*10)/10,'闭关小时'],[`${S.st.tw} / ${S.st.tl}`,'渡劫 成 / 败'],[S.st.early,'子时前入睡']];
+ $('#ledger').innerHTML=L.map(([v,n])=>`<div><b>${v}</b><span>${n}</span></div>`).join('');
 }
 const REPO='https://github.com/yizhaosu/cyber-immortal';
 function rankBody(){return `把下面这段灵契提交上来，机器人会自动算分并更新排行榜。请不要修改它。\n\n${S.lastSeal}\n`}
@@ -469,19 +1002,23 @@ let tt;function toast(m){const el=$('#toast');el.textContent=m;el.hidden=false;c
 /* ---------- tribulation ---------- */
 let T=null,raf=0,last=0;
 function startTrib(){
- T={n:0,total:5+S.realm,lives:S.dx>=70?4:3,pos:0,dir:1,speed:.55+S.realm*.05,done:false};
+ if(S.dl.trib)return;S.dl.trib=1;
+ const guard=eqList().filter(t=>kindOf(t)==='guard'&&t.rare>=3).length;
+ const lives=(S.dx>=70?4:3)+S.shield+guard;
+ T={n:0,total:5+S.realm,lives,max:lives,pos:0,dir:1,speed:.55+S.realm*.05,done:false};
+ S.shield=0;save();
  newZone();$('#ov').hidden=false;$('#tmsg').textContent='雷光扫进青色安全区时，按下挡雷（或空格）。';
  $('#tbtn').textContent='挡 雷';updT();last=performance.now();cancelAnimationFrame(raf);raf=requestAnimationFrame(loop);$('#tbtn').focus();
 }
 function newZone(){
- const w=clamp((11+S.dx*.12+S.hj*.08-T.n*.8)/100,.07,.36);
+ const w=clamp((11+S.dx*.12+S.hj*.08+bonus('guard')-T.n*.8)/100,.07,.4);
  T.zw=w;T.zs=Math.random()*(1-w);
  const z=$('#tzone');z.style.left=T.zs*100+'%';z.style.width=w*100+'%';
 }
 function updT(){
  $('#ttitle').textContent=T.done?(T.win?'渡劫成功':'渡劫失败'):`第 ${T.n+1} 道天雷`;
  $('#tcount').textContent=`${T.n} / ${T.total}`;
- $('#tlives').textContent='●'.repeat(Math.max(0,T.lives))+'○'.repeat(Math.max(0,(S.dx>=70?4:3)-T.lives));
+ $('#tlives').textContent='●'.repeat(Math.max(0,T.lives))+'○'.repeat(Math.max(0,T.max-T.lives));
 }
 function loop(now){
  if(!T||T.done)return;const dt=Math.min(.05,(now-last)/1000);last=now;
@@ -492,6 +1029,7 @@ function strike(){
  if(!T)return;
  if(T.done){$('#ov').hidden=true;T=null;render();return}
  const inZ=T.pos>=T.zs&&T.pos<=T.zs+T.zw;const center=Math.abs(T.pos-(T.zs+T.zw/2))<T.zw*.15;
+ const b=$('#tbolt');b.style.left=T.pos*100+'%';b.classList.remove('hit','block');void b.getBoundingClientRect();b.classList.add(inZ?'block':'hit');
  if(inZ){$('#tmsg').textContent=center?'完美化解！雷光化作灵气入体。':'挡住了。';}
  else{T.lives--;$('#tmsg').textContent='被劈中了！护体金光碎了一层。';const c=$('#tribcard');c.classList.remove('flash');void c.offsetWidth;c.classList.add('flash')}
  T.n++;T.speed*=1.1;
@@ -503,14 +1041,15 @@ function endTrib(win){
  T.done=true;T.win=win;cancelAnimationFrame(raf);
  const from=REALMS[S.realm].n;
  if(win){
-  S.realm++;S.xw=0;if(S.realm<7&&S.reserve>0){const f=Math.min(S.reserve,need());S.xw=f;S.reserve-=f}else if(S.realm>=7)S.reserve=0;S.dx=clamp(S.dx+10,0,100);S.day=S.day;
+  S.st.tw++;S.realm++;S.xw=0;if(S.realm<7&&S.reserve>0){const f=Math.min(S.reserve,need());S.xw=f;S.reserve-=f}else if(S.realm>=7){S.reserve=0;S.med=null}S.dx=clamp(S.dx+10,0,100);
   const t=mint('trib',S.realm>=5?2:1);
   S.log.unshift({d:S.day,k:'drop',t:`渡劫所得：${RARE[t.rare].n}法宝「${t.name}」`,l:[]});
-  S.log.unshift({d:S.day,k:'trib',t:`扛过 ${T.total} 道天雷，从${from}突破至${REALMS[S.realm].n}！`,l:['道心 +10','法相新生一道光环']});
+  const L=['道心 +10','法相新生一道光环','洞府的服务器塔又高了一层'];if(S.realm===2||S.realm===4)L.push('多开一个法宝位');
+  S.log.unshift({d:S.day,k:'trib',t:`扛过 ${T.total} 道天雷，从${from}突破至${REALMS[S.realm].n}！`,l:L});
   $('#tmsg').textContent=`突破至${REALMS[S.realm].n}，获得「${t.name}」。`;
  }else{
-  const lost=Math.round(S.xw*.4);S.xw-=lost;S.dx=clamp(S.dx-10,0,100);
-  S.log.unshift({d:S.day,k:'bad',t:`第 ${T.n} 道天雷下道基崩裂，渡劫失败。`,l:[`修为 −${lost}`,'道心 −10','建议早睡几天，养好道心再来']});
+  S.st.tl++;const lost=Math.round(S.xw*.4);S.xw-=lost;S.dx=clamp(S.dx-10,0,100);
+  S.log.unshift({d:S.day,k:'bad',t:`第 ${T.n} 道天雷下道基崩裂，渡劫失败。`,l:[`修为 −${lost}`,'道心 −10','建议早睡几天，或炼两颗护心丹再来']});
   $('#tmsg').textContent=`修为 −${lost}，道心 −10。养好道心再来。`;
  }
  save();updT();$('#tbtn').textContent='出关';
@@ -518,10 +1057,10 @@ function endTrib(win){
 
 /* ---------- wiring ---------- */
 function start(data){
- S=(data&&data.S)||load()||fresh();S.reserve=S.reserve||0;S.seen=S.seen||[];
+ S=norm((data&&data.S)||load()||fresh());
  $('#f').addEventListener('submit',checkin);
  $('#nm').addEventListener('change',e=>{S.name=e.target.value.trim()||'无名散修';save();render()});
- $('#reroll').addEventListener('click',()=>{S.seed=Math.random().toString(36).slice(2,9);save();drawAvatar();toast('法相已重塑')});
+ $('#reroll').addEventListener('click',()=>{S.seed=Math.random().toString(36).slice(2,9);save();render();toast('法相已重塑')});
  $('#tribBtn').addEventListener('click',startTrib);
  $('#rankBtn').addEventListener('click',e=>{
   const m=$('#rankMsg');
@@ -535,20 +1074,34 @@ function start(data){
  $('#sealFile').addEventListener('change',e=>{const f=e.target.files&&e.target.files[0];if(!f)return;f.text().then(importSeal);e.target.value=''});
  $('#tbtn').addEventListener('click',strike);
  document.addEventListener('keydown',e=>{if(!$('#ov').hidden&&(e.code==='Space'||e.code==='Enter')){e.preventDefault();strike()}});
+ $('.tabs').addEventListener('click',e=>{const b=e.target.closest('.tab');if(b)setTab(b.dataset.tab)});
+ $('.tabs').addEventListener('keydown',e=>{if(e.key!=='ArrowRight'&&e.key!=='ArrowLeft')return;const ts=$$('.tab');const i=ts.findIndex(b=>b.dataset.tab===tab);const n=ts[(i+(e.key==='ArrowRight'?1:ts.length-1))%ts.length];setTab(n.dataset.tab);n.focus()});
+ $('#signBox').addEventListener('click',e=>{if(e.target.closest('#signBtn'))drawSign()});
+ $('#cave').addEventListener('click',e=>{if(e.target.closest('#medBtn'))medToggle()});
+ $('#pills').addEventListener('click',e=>{const b=e.target.closest('[data-brew]');if(b)brew(b.dataset.brew)});
+ let meltArm=null,meltT=0;
+ $('#vault').addEventListener('click',e=>{
+  const q=e.target.closest('[data-eq]');if(q){toggleEq(q.dataset.eq);return}
+  const m=e.target.closest('[data-melt]');if(!m)return;
+  if(meltArm!==m.dataset.melt){meltArm=m.dataset.melt;$$('.melt.arm').forEach(x=>{x.classList.remove('arm');x.textContent=x.dataset.t||x.textContent});m.dataset.t=m.textContent;m.classList.add('arm');m.textContent='确认熔炼';clearTimeout(meltT);meltT=setTimeout(()=>{meltArm=null;m.classList.remove('arm');m.textContent=m.dataset.t},3000);return}
+  meltArm=null;clearTimeout(meltT);melt(m.dataset.melt);
+ });
  let armed=0;
  $('#resetBtn').addEventListener('click',()=>{
   if(!armed){armed=1;$('#resetBtn').textContent='再点一次确认转世';setTimeout(()=>{armed=0;$('#resetBtn').textContent='转世重修'},3000);return}
   armed=0;S=fresh();save();render();$('#resetBtn').textContent='转世重修';toast('已转世，前尘尽散');
  });
  $('#cardBtn').addEventListener('click',()=>{
-  const R=REALMS[S.realm];const on=titles().filter(x=>x[1]).map(x=>x[0]);
-  const txt=`【赛博修仙录 Cyber Immortal】道号「${S.name}」｜${R.n}·${R.t}（${stage()}）｜修行 ${S.day} 日，累计焚香 ${S.tok} 万 Token，约烧灵石 ¥${Math.round(S.cny)}｜夜修值 ${S.yx}，道心 ${S.dx}｜藏宝 ${S.treasures.length} 件${on.length?'｜称号：'+on.join('、'):''}`;
-  const ok=()=>toast('名片已复制，去朋友圈渡劫吧');
+  const R=REALMS[S.realm];const on=ACH.filter(a=>S.ach[a[1]]).map(a=>a[1]);
+  const txt=`【赛博修仙录 Cyber Immortal】道号「${S.name}」｜${R.n}·${R.t}（${stage()}）｜修行 ${S.day} 日，连签 ${S.sk.n} 日，累计焚香 ${S.tok} 万 Token，约烧灵石 ¥${Math.round(S.cny)}｜夜修值 ${S.yx}，道心 ${S.dx}｜藏宝 ${S.treasures.length} 件${on.length?`｜成就 ${on.length}/${ACH.length}：`+on.slice(-5).join('、'):''}`;
+  const ok=()=>{toast('名片已复制，去朋友圈渡劫吧');quest('card');save();render()};
   try{navigator.clipboard.writeText(txt).then(ok,()=>fallback(txt))}catch(e){fallback(txt)}
  });
- function fallback(txt){const ta=document.createElement('textarea');ta.value=txt;document.body.appendChild(ta);ta.select();try{document.execCommand('copy');toast('名片已复制')}catch(e){toast('复制失败，请手动复制')}ta.remove()}
+ function fallback(txt){const ta=document.createElement('textarea');ta.value=txt;document.body.appendChild(ta);ta.select();try{document.execCommand('copy');toast('名片已复制');quest('card');save();render()}catch(e){toast('复制失败，请手动复制')}ta.remove()}
+ // 闭关计时、过了早上 6 点换新的一天、时辰变化换天色
+ setInterval(()=>{if(S.dl&&S.dl.date!==today()){render();return}if(S.med&&tab==='df')renderDongfu();drawScene();const m=medState();$$('.tab').forEach(b=>{if(b.dataset.tab==='df')b.querySelector('.dot').hidden=tab==='df'||!(!S.med||m.h>=MED_MAX)})},20000);
  window.claude?.hot?.snapshot?.(()=>({S}));
- render();
+ save();render();
 }
 window.claude?.hot?.ready?window.claude.hot.ready(start):start(window.claude?.hot?.data??{});
 })();

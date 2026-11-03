@@ -1,6 +1,6 @@
 {
   "name": "cyber-immortal",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "赛博修仙录 Cyber Immortal：把本机 Claude Code / Codex 的用量变成修仙灵契",
   "bin": { "cyber-immortal": "xiuxian.js" },
   "files": ["xiuxian.js"],

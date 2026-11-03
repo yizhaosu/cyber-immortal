@@ -17,7 +17,7 @@ npx cyber-immortal        # 生成灵契，粘贴进游戏的「导入灵契」
 
 `.github/workflows/site.yml` 会处理标题以「登榜」开头的 issue：`scripts/submit.js` 校验灵契，把数据合并进 `data/players/<GitHub 用户名>.json` 并提交到 main，然后在 issue 下回复并关闭。之后 `scripts/build.js` 把 `web/` 和所有存档汇总成 `data/leaderboard.json`，部署到 GitHub Pages。
 
-榜上修为只按真实数据计算：每日 60 × √(万 Token) × (1 + 0.15 × 熬夜小时)，按累计修为折算境界，不含游戏里的天象、道心和渡劫。数据由本人提交，没有防作弊。
+榜上修为只按真实数据计算：每日 60 × √(万 Token) × (1 + 0.15 × 熬夜小时)，按累计修为折算境界（门槛 7k / 25k / 63k / 95k / 190k / 380k / 600k，和游戏一致），不含游戏里的天象、道心和渡劫。数据由本人提交，没有防作弊。
 
 个人主页：`board.html?u=<GitHub 用户名>`。
 
@@ -27,6 +27,8 @@ npx cyber-immortal        # 生成灵契，粘贴进游戏的「导入灵契」
 - [x] 本地日志 → 灵契导入
 - [x] 发布 npm 包
 - [x] GitHub 账号登榜、公开主页、排行榜
+- [x] 晨课签到、每日三课、闭关、丹房、法宝佩戴、成就图鉴
+- [x] 境界重新平衡：门槛拉长、九层、突破道行要求
 - [ ] 法相 / 法宝存服务端，之后可选上链铸造
 
 ## License
