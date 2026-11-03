@@ -32,6 +32,9 @@ h1,h2,h3{font-family:var(--f-disp);font-weight:400;margin:0;text-wrap:balance;le
 button{font:inherit;cursor:pointer;border-radius:6px;border:1px solid var(--line);background:var(--panel2);color:var(--fg);padding:8px 14px}
 button:hover{border-color:var(--qi)}
 button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid var(--qi);outline-offset:2px}
+a.btn-link{display:inline-flex;align-items:center;text-decoration:none;border-radius:6px;border:1px solid var(--line);background:var(--panel2);color:var(--fg);padding:8px 14px}
+a.btn-link.btn-main{background:var(--paper);color:#2a1c05;border-color:var(--paper);font-weight:700}
+a.btn-link[aria-disabled="true"]{opacity:.45}
 button:disabled{opacity:.4;cursor:not-allowed;border-color:var(--line)}
 .btn-main{background:var(--paper);color:#2a1c05;border-color:var(--paper);font-weight:700}
 .btn-main:hover{border-color:#fff}
@@ -158,9 +161,12 @@ th{color:var(--mute);font-weight:500;font-size:12px}
       <div class="xwtext"><span class="mono" id="xwtxt">修为 0 / 300</span><span id="xwhint">打卡今日修行来积累修为</span></div>
       <div class="hero-actions">
         <button id="tribBtn" class="btn-red" type="button" disabled>渡劫</button>
+        <a id="rankBtn" class="btn-link btn-main" href="#" target="_blank" rel="noopener">登榜</a>
+        <a class="btn-link" href="https://yizhaosu.github.io/cyber-immortal/board.html" target="_blank" rel="noopener">排行榜</a>
         <button id="cardBtn" type="button">复制修仙名片</button>
         <button id="resetBtn" type="button">转世重修</button>
       </div>
+      <p id="rankMsg" hidden style="margin:0;font-size:12px;color:var(--qi)"></p>
       <div class="chips" id="titles"></div>
     </div>
   </section>
@@ -189,7 +195,7 @@ th{color:var(--mute);font-weight:500;font-size:12px}
           <label class="filebtn"><button type="button" tabindex="-1">上传灵契文件</button><input id="sealFile" type="file" accept=".txt,.json,text/plain,application/json" aria-label="上传灵契文件"></label>
           <button id="demoBtn" type="button">试用示例灵契</button>
         </div>
-        <p id="impMsg">同一天只会计入一次，可以每天重复导入。命令行工具内测中，还没发布到 npm，暂时没法用 npx 直接运行。</p>
+        <p id="impMsg">同一天只会计入一次，可以每天重复导入。需要电脑上装有 Node.js 18 或更新版本。</p>
       </div>
       <div class="sep"></div>
       <span class="label">或者手动打卡</span>
@@ -403,6 +409,7 @@ function importSeal(txt){
   S.seen.push(d.d);
  }
  if(S.seen.length>400)S.seen=S.seen.slice(-400);
+ if(!days[0].d.startsWith('demo')){const m=String(txt).match(/XIUXIAN1\.[A-Za-z0-9_-]+/);if(m)S.lastSeal=m[0]}
  save();render();
  msg.style.color='';msg.textContent=days[0].d.startsWith('demo')?`导入了 ${days.length} 天示例修行，共得修为 ${total}。想清掉示例就点转世重修。`:`导入了 ${days.length} 个修行日（${days[0].d} 至 ${days[days.length-1].d}），共得修为 ${total}。`;
  $('#seal').value='';toast(`导入 ${days.length} 日修行`);
@@ -445,7 +452,17 @@ function render(){
  $('#vcount').textContent=`${S.treasures.length} 件`;
  $('#vault').innerHTML=S.treasures.length?S.treasures.map(t=>`<div class="tr"><img src="${drawFu(t)}" alt="${esc(t.name)}"><span class="tn">${esc(t.name)}</span><span class="rare" style="color:${RARE[t.rare].c}">${RARE[t.rare].n} · 第 ${t.day} 日 · ${REALMS[t.realm].n}</span><span class="ti" title="${t.id}">${t.id}</span></div>`).join(''):
   `<div class="empty" style="grid-column:1/-1">还没有法宝。日常打卡有三成机缘掉落，渡劫成功必得一件。</div>`;
+ renderRank();
  drawAvatar();
+}
+const REPO='https://github.com/yizhaosu/cyber-immortal';
+function rankBody(){return `把下面这段灵契提交上来，机器人会自动算分并更新排行榜。请不要修改它。\n\n${S.lastSeal}\n`}
+function renderRank(){
+ const a=$('#rankBtn');
+ if(!S.lastSeal){a.setAttribute('aria-disabled','true');a.href='#';a.title='先导入你自己的灵契';return}
+ a.removeAttribute('aria-disabled');a.title='用 GitHub 账号登榜';
+ const url=`${REPO}/issues/new?title=${encodeURIComponent('登榜 · '+S.name)}&body=${encodeURIComponent(rankBody())}`;
+ a.href=url.length<7800?url:`${REPO}/issues/new?title=${encodeURIComponent('登榜 · '+S.name)}`;
 }
 let tt;function toast(m){const el=$('#toast');el.textContent=m;el.hidden=false;clearTimeout(tt);tt=setTimeout(()=>el.hidden=true,2200)}
 
@@ -506,6 +523,13 @@ function start(data){
  $('#nm').addEventListener('change',e=>{S.name=e.target.value.trim()||'无名散修';save();render()});
  $('#reroll').addEventListener('click',()=>{S.seed=Math.random().toString(36).slice(2,9);save();drawAvatar();toast('法相已重塑')});
  $('#tribBtn').addEventListener('click',startTrib);
+ $('#rankBtn').addEventListener('click',e=>{
+  const m=$('#rankMsg');
+  if(!S.lastSeal){e.preventDefault();m.hidden=false;m.textContent='登榜需要真实数据：先运行 npx cyber-immortal，把灵契导入游戏，再点登榜。';return}
+  m.hidden=false;
+  if(!$('#rankBtn').href.includes('body=')){try{navigator.clipboard.writeText(S.lastSeal)}catch(err){}m.textContent='灵契太长放不进链接，已复制到剪贴板。请在打开的 GitHub 页面里粘贴到正文，再点 Submit。';}
+  else m.textContent='已打开 GitHub 提交页，登录后点 Submit new issue 即可。一两分钟后榜单更新。';
+ });
  $('#impBtn').addEventListener('click',()=>importSeal($('#seal').value));
  $('#demoBtn').addEventListener('click',()=>importSeal(demoSeal()));
  $('#sealFile').addEventListener('change',e=>{const f=e.target.files&&e.target.files[0];if(!f)return;f.text().then(importSeal);e.target.value=''});
