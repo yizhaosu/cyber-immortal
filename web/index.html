@@ -1,0 +1,531 @@
+<title>赛博修仙录 Cyber Immortal</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=ZCOOL+QingKe+HuangYou&family=Noto+Sans+SC:wght@400;500;700&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+/* 布局：顶部法相+境界条，下方三栏（属性 / 今日修行 / 藏宝阁），手机上叠成一列。夜里修仙，刻意只做深色一套。 */
+:root{
+  --ink:#0f1222; --panel:#161a2e; --panel2:#1c2140; --line:#2b3157;
+  --fg:#e9e7f2; --mute:#959bbd;
+  --paper:#e9c46a; --cinnabar:#e5484d; --qi:#7ee0e6; --violet:#b48cff;
+  --f-disp:"ZCOOL QingKe HuangYou","Noto Sans SC","PingFang SC",sans-serif;
+  --f-body:"Noto Sans SC","PingFang SC","Microsoft YaHei",sans-serif;
+  --f-mono:"JetBrains Mono",ui-monospace,Menlo,Consolas,monospace;
+  color-scheme:dark;
+}
+[hidden]{display:none!important}
+html,body{background:var(--ink);color:var(--fg)}
+body{font-family:var(--f-body);font-size:14px;line-height:1.6;
+  background:
+    radial-gradient(1200px 500px at 15% -10%,rgba(126,224,230,.08),transparent 60%),
+    radial-gradient(900px 500px at 100% 0%,rgba(229,72,77,.07),transparent 60%),
+    var(--ink);
+  min-height:100%}
+body::after{content:"";position:fixed;inset:0;pointer-events:none;
+  background:repeating-linear-gradient(0deg,rgba(255,255,255,.018) 0 1px,transparent 1px 3px);z-index:50}
+.wrap{max-width:1180px;margin:0 auto;padding-block:20px 48px;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));
+  display:flex;flex-direction:column;gap:18px}
+h1,h2,h3{font-family:var(--f-disp);font-weight:400;margin:0;text-wrap:balance;letter-spacing:.04em}
+.mono{font-family:var(--f-mono);font-variant-numeric:tabular-nums}
+.label{font-size:11px;letter-spacing:.14em;color:var(--mute);text-transform:uppercase}
+button{font:inherit;cursor:pointer;border-radius:6px;border:1px solid var(--line);background:var(--panel2);color:var(--fg);padding:8px 14px}
+button:hover{border-color:var(--qi)}
+button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid var(--qi);outline-offset:2px}
+button:disabled{opacity:.4;cursor:not-allowed;border-color:var(--line)}
+.btn-main{background:var(--paper);color:#2a1c05;border-color:var(--paper);font-weight:700}
+.btn-main:hover{border-color:#fff}
+.btn-red{background:var(--cinnabar);border-color:var(--cinnabar);color:#fff;font-weight:700}
+
+/* hero */
+.hero{display:grid;grid-template-columns:auto 1fr;gap:22px;align-items:center;
+  border:1px solid var(--line);border-radius:14px;padding:18px;background:linear-gradient(135deg,var(--panel),rgba(22,26,46,.6))}
+.ava{width:168px;max-width:100%;aspect-ratio:1;border-radius:50%;display:block;box-shadow:0 0 40px rgba(126,224,230,.15)}
+.ava-col{display:flex;flex-direction:column;gap:8px;align-items:center}
+.ava-col small{color:var(--mute);font-size:11px}
+.hero-main{min-width:0;display:flex;flex-direction:column;gap:10px}
+.name-row{display:flex;gap:10px;align-items:baseline;flex-wrap:wrap}
+#nm{font-family:var(--f-disp);font-size:30px;background:transparent;border:0;border-bottom:1px dashed var(--line);color:var(--fg);width:9em;max-width:100%;padding:0}
+.realm{font-family:var(--f-disp);font-size:44px;line-height:1.05;color:var(--paper);text-shadow:0 0 18px rgba(233,196,106,.35)}
+.realm span{font-size:20px;color:var(--fg);margin-left:10px}
+.xwbar{height:14px;border-radius:7px;background:var(--panel2);border:1px solid var(--line);overflow:hidden;position:relative}
+.xwbar i{position:absolute;inset:0 auto 0 0;background:linear-gradient(90deg,var(--qi),var(--paper));transition:width .6s}
+.xwtext{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;color:var(--mute);font-size:12px}
+.hero-actions{display:flex;gap:10px;flex-wrap:wrap}
+.chips{display:flex;gap:6px;flex-wrap:wrap}
+.chip{font-size:12px;padding:2px 9px;border-radius:999px;border:1px solid var(--line);color:var(--mute)}
+.chip.on{color:var(--paper);border-color:rgba(233,196,106,.5)}
+
+/* grid */
+.grid{display:grid;grid-template-columns:260px minmax(0,1fr) 300px;gap:18px;align-items:start}
+.pane{border:1px solid var(--line);border-radius:12px;background:var(--panel);padding:16px;display:flex;flex-direction:column;gap:12px;min-width:0}
+.pane h2{font-size:22px;display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+.pane h2 small{font-family:var(--f-body);font-size:12px;color:var(--mute);letter-spacing:0}
+.stat{display:grid;grid-template-columns:4.5em 1fr auto;gap:8px;align-items:center}
+.stat b{font-weight:500}
+.stat .mini{height:6px;border-radius:3px;background:var(--panel2);overflow:hidden}
+.stat .mini i{display:block;height:100%;background:var(--qi)}
+.stat .v{font-family:var(--f-mono);font-size:13px;text-align:right;min-width:4.5em}
+.stat-note{font-size:12px;color:var(--mute);margin-top:-6px;grid-column:1/-1}
+.sep{border-top:1px dashed var(--line)}
+.burn{display:flex;flex-direction:column;gap:2px}
+.burn .big{font-family:var(--f-mono);font-size:22px;color:var(--cinnabar)}
+
+form{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.fld{display:flex;flex-direction:column;gap:4px;min-width:0}
+.fld.full{grid-column:1/-1}
+.fld label{font-size:12px;color:var(--mute)}
+input,select{font:inherit;color:var(--fg);background:var(--panel2);border:1px solid var(--line);border-radius:6px;padding:8px 10px;width:100%;box-sizing:border-box}
+.formfoot{grid-column:1/-1;display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.formfoot .hint{font-size:12px;color:var(--mute)}
+
+.imp{display:flex;flex-direction:column;gap:8px}
+.imp code{font-family:var(--f-mono);background:var(--panel2);border:1px solid var(--line);border-radius:6px;padding:8px 10px;display:block;overflow-x:auto;white-space:nowrap;color:var(--paper)}
+.imp textarea{font-family:var(--f-mono);font-size:12px;color:var(--fg);background:var(--panel2);border:1px solid var(--line);border-radius:6px;padding:8px 10px;width:100%;box-sizing:border-box;min-height:64px;resize:vertical}
+.imp .row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.imp p{margin:0;font-size:12px;color:var(--mute)}
+.filebtn{position:relative;overflow:hidden}
+.filebtn input{position:absolute;inset:0;opacity:0;cursor:pointer}
+.log{display:flex;flex-direction:column;gap:10px;max-height:420px;overflow:auto;padding-right:4px}
+.entry{border-left:2px solid var(--line);padding:2px 0 2px 12px}
+.entry.k-ev{border-color:var(--qi)}
+.entry.k-trib{border-color:var(--paper)}
+.entry.k-bad{border-color:var(--cinnabar)}
+.entry.k-drop{border-color:var(--violet)}
+.entry .d{font-family:var(--f-mono);font-size:11px;color:var(--mute)}
+.entry ul{margin:4px 0 0;padding-left:16px;color:var(--mute);font-size:13px}
+.gain{color:var(--paper);font-family:var(--f-mono)}
+
+.vault{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.tr{border:1px solid var(--line);border-radius:8px;padding:8px;display:flex;flex-direction:column;gap:6px;background:var(--panel2);min-width:0}
+.tr img{width:100%;aspect-ratio:192/264;border-radius:4px;display:block}
+.tr .tn{font-family:var(--f-disp);font-size:16px;line-height:1.2}
+.tr .ti{font-family:var(--f-mono);font-size:10px;color:var(--mute);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.rare{font-size:11px;font-weight:700}
+.empty{color:var(--mute);font-size:13px;border:1px dashed var(--line);border-radius:8px;padding:14px;text-align:center}
+
+.rules{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px}
+.rule{border-top:1px solid var(--line);padding-top:10px}
+.rule h3{font-size:18px;color:var(--qi);margin-bottom:4px}
+.rule p{margin:0;color:var(--mute);font-size:13px}
+.table-wrap{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:13px}
+td,th{border-bottom:1px solid var(--line);padding:6px 8px;text-align:left;vertical-align:top}
+th{color:var(--mute);font-weight:500;font-size:12px}
+
+/* tribulation */
+.ov{position:fixed;inset:0;background:rgba(6,7,15,.86);display:flex;align-items:center;justify-content:center;z-index:40;
+  padding:max(16px,env(safe-area-inset-top,0px)) max(16px,env(safe-area-inset-right,0px)) max(16px,env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px))}
+.trib{width:min(560px,100%);border:1px solid var(--paper);border-radius:14px;background:var(--panel);padding:22px;display:flex;flex-direction:column;gap:14px;text-align:center}
+.trib h2{font-size:32px;color:var(--paper)}
+.tbar{position:relative;height:46px;border-radius:8px;background:var(--panel2);border:1px solid var(--line);overflow:hidden}
+.tzone{position:absolute;top:0;bottom:0;background:rgba(126,224,230,.25);border-left:2px solid var(--qi);border-right:2px solid var(--qi)}
+.tzone::after{content:"";position:absolute;left:50%;top:0;bottom:0;width:2px;margin-left:-1px;background:rgba(126,224,230,.7)}
+.tneedle{position:absolute;top:-4px;bottom:-4px;width:4px;margin-left:-2px;background:var(--paper);box-shadow:0 0 12px var(--paper)}
+.tinfo{display:flex;justify-content:space-between;font-family:var(--f-mono);font-size:13px;color:var(--mute)}
+.lives{color:var(--paper);letter-spacing:.2em}
+#tmsg{min-height:1.6em;font-weight:500}
+.flash{animation:fl .35s}
+@keyframes fl{0%{background:#fff}100%{background:var(--panel)}}
+#tbtn{font-size:22px;padding:14px;font-family:var(--f-disp)}
+.toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--paper);color:#2a1c05;padding:8px 16px;border-radius:999px;font-weight:700;z-index:60}
+
+@media (max-width:980px){.grid{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}.p-vault{grid-column:1/-1}.vault{grid-template-columns:repeat(auto-fill,minmax(130px,1fr))}}
+@media (max-width:640px){
+  .grid{grid-template-columns:minmax(0,1fr)}
+  .hero{grid-template-columns:minmax(0,1fr);text-align:left}
+  .ava{width:132px}
+  .realm{font-size:34px}
+  form{grid-template-columns:minmax(0,1fr)}
+}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+
+<div class="wrap">
+  <section class="hero">
+    <div class="ava-col">
+      <img id="ava" class="ava" alt="你的法相">
+      <small>长按或右键保存法相</small>
+      <button id="reroll" type="button">重塑法相</button>
+    </div>
+    <div class="hero-main">
+      <div class="name-row">
+        <input id="nm" aria-label="道号" maxlength="12">
+        <span class="label mono" id="dayno">第 0 日</span>
+      </div>
+      <div class="realm" id="realm">炼气期<span>Prompt 童子 · 初期</span></div>
+      <div class="xwbar"><i id="xwfill" style="width:0"></i></div>
+      <div class="xwtext"><span class="mono" id="xwtxt">修为 0 / 300</span><span id="xwhint">打卡今日修行来积累修为</span></div>
+      <div class="hero-actions">
+        <button id="tribBtn" class="btn-red" type="button" disabled>渡劫</button>
+        <button id="cardBtn" type="button">复制修仙名片</button>
+        <button id="resetBtn" type="button">转世重修</button>
+      </div>
+      <div class="chips" id="titles"></div>
+    </div>
+  </section>
+
+  <div class="grid">
+    <section class="pane">
+      <h2>根骨 <small>属性</small></h2>
+      <div id="stats" style="display:flex;flex-direction:column;gap:12px"></div>
+      <div class="sep"></div>
+      <div class="burn">
+        <span class="label">累计焚香</span>
+        <span class="big mono" id="tok">0 万 Token</span>
+        <span style="color:var(--mute);font-size:12px" id="cny">约焚灵石 ¥0（按 ¥0.6/万 Token 估算）</span>
+      </div>
+    </section>
+
+    <section class="pane">
+      <h2>今日修行 <small>每个修行日从早上 6 点算起</small></h2>
+      <div class="imp">
+        <span class="label">接入真实修行 · 推荐</span>
+        <p>在终端运行下面这条命令，它会读取本机 Claude Code 和 Codex 的日志，算出每天的 Token、对话轮数和熬夜时长，生成一段灵契。只汇总数字，不读取对话内容。</p>
+        <code>npx cyber-immortal</code>
+        <textarea id="seal" aria-label="灵契" placeholder="把 XIUXIAN1. 开头的灵契粘贴到这里"></textarea>
+        <div class="row">
+          <button class="btn-main" id="impBtn" type="button">导入灵契</button>
+          <label class="filebtn"><button type="button" tabindex="-1">上传灵契文件</button><input id="sealFile" type="file" accept=".txt,.json,text/plain,application/json" aria-label="上传灵契文件"></label>
+          <button id="demoBtn" type="button">试用示例灵契</button>
+        </div>
+        <p id="impMsg">同一天只会计入一次，可以每天重复导入。命令行工具内测中，还没发布到 npm，暂时没法用 npx 直接运行。</p>
+      </div>
+      <div class="sep"></div>
+      <span class="label">或者手动打卡</span>
+      <form id="f">
+        <div class="fld"><label for="f-tok">今日 Token 消耗（万）</label><input id="f-tok" type="number" min="0" max="5000" value="38" inputmode="numeric"></div>
+        <div class="fld"><label for="f-sleep">昨夜入睡时间</label>
+          <select id="f-sleep">
+            <option value="0">23:00 前</option><option value="1">0:00 左右</option><option value="2">1:00 左右</option>
+            <option value="3" selected>2:00 左右</option><option value="4">3:00 左右</option><option value="6">通宵，看见了日出</option>
+          </select></div>
+        <div class="fld"><label for="f-rounds">与 AI 对话轮数</label><input id="f-rounds" type="number" min="0" max="2000" value="120" inputmode="numeric"></div>
+        <div class="fld"><label for="f-hall">被 AI 幻觉坑了几次</label><input id="f-hall" type="number" min="0" max="99" value="2" inputmode="numeric"></div>
+        <div class="fld full"><label for="f-fa">今日主修法门</label>
+          <select id="f-fa">
+            <option value="code">剑修 · 写代码</option><option value="write">文修 · 写作</option><option value="paint">丹青修 · 画图</option>
+            <option value="agent">符箓修 · 跑 Agent</option><option value="chat">散修 · 闲聊</option>
+          </select></div>
+        <div class="formfoot">
+          <button class="btn-main" type="submit">打卡修行</button>
+          <span class="hint">不用编程工具的话，手动填今天的情况。</span>
+        </div>
+      </form>
+      <div class="sep"></div>
+      <h2 style="font-size:18px">修行录 <small>天象与因果</small></h2>
+      <div class="log" id="log"></div>
+    </section>
+
+    <section class="pane p-vault">
+      <h2>藏宝阁 <small id="vcount">0 件</small></h2>
+      <div class="vault" id="vault"></div>
+      <p style="margin:0;font-size:12px;color:var(--mute)">每件法宝由你的道号、日期和修行数据生成，编号唯一。现在只存在你的浏览器里，还没有上链。</p>
+    </section>
+  </div>
+
+  <section class="pane">
+    <h2>天道规则 <small>你的数据如何变成修为</small></h2>
+    <div class="table-wrap"><table>
+      <thead><tr><th>现实行为</th><th>修仙后果</th></tr></thead>
+      <tbody>
+        <tr><td>消耗 Token</td><td>修为 = 60 × √(万 Token) × (1 + 灵根%)。烧得越多修得越快，但边际递减，空转刷 Token 不划算。缓存命中不计。</td></tr>
+        <tr><td>熬夜</td><td>导入时按最后一次 AI 活动时间算。每晚一个时辰：修为 +15%，夜修值 +10，道心 −5。23 点前睡：道心 +8。</td></tr>
+        <tr><td>对话轮数</td><td>每 50 轮灵根 +1，每 20 轮神识 +1k。</td></tr>
+        <tr><td>被幻觉坑</td><td>每次幻觉抗性 +2，道心 −3。吃一堑长一智。</td></tr>
+        <tr><td>道心低于 25</td><td>心魔缠身，修为折半。唯一解药是早睡。</td></tr>
+        <tr><td>修为圆满</td><td>溢出的修为存进灵气储备，渡劫成功后灌入新境界。可以渡劫。天雷数随境界增加，道心越高安全区越宽。失败损失四成修为。</td></tr>
+      </tbody>
+    </table></div>
+    <div class="rules">
+      <div class="rule"><h3>八大境界</h3><p>炼气 Prompt 童子 → 筑基 上下文修士 → 金丹 Token 结丹 → 元婴 Agent 元婴 → 化神 多模态化神 → 渡劫 对齐天劫 → 大乘 千卡大乘 → 飞升 奇点。</p></div>
+      <div class="rule"><h3>法门</h3><p>剑修修为 ×1.1；文修养道心；丹青修更容易出法宝；符箓修修为 ×1.25 但伤道心；散修佛系，修为 ×0.8。</p></div>
+      <div class="rule"><h3>数字资产</h3><p>法相随境界长出光环，熬夜多了会变成夜修魔相。每次渡劫成功必得一件灵品以上法宝，日常打卡有概率掉落。</p></div>
+    </div>
+  </section>
+</div>
+
+<div class="ov" id="ov" hidden>
+  <div class="trib" id="tribcard">
+    <h2 id="ttitle">第 1 道天雷</h2>
+    <div class="tinfo"><span id="tcount">0 / 5</span><span>护体金光 <span class="lives" id="tlives">●●●</span></span></div>
+    <div class="tbar"><div class="tzone" id="tzone"></div><div class="tneedle" id="tneedle"></div></div>
+    <div id="tmsg">雷光扫进青色安全区时，按下挡雷（或空格）。</div>
+    <button id="tbtn" class="btn-main" type="button">挡 雷</button>
+  </div>
+</div>
+<div class="toast" id="toast" hidden></div>
+
+<script>
+(()=>{
+const $=s=>document.querySelector(s);
+const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+const num=(v,a,b)=>clamp(Number(v)||0,a,b);
+function seedNum(s){s=String(s);let h=2166136261;for(let i=0;i<s.length;i++){h^=s.charCodeAt(i);h=Math.imul(h,16777619)}return h>>>0}
+function rng(seed){let a=seedNum(seed);return()=>{a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
+function hex(seed,n){const r=rng(seed);let s='';for(let i=0;i<n;i++)s+='0123456789abcdef'[Math.floor(r()*16)];return s}
+
+const REALMS=[
+ {n:'炼气期',t:'Prompt 童子',need:300},{n:'筑基期',t:'上下文修士',need:900},{n:'金丹期',t:'Token 结丹',need:2400},
+ {n:'元婴期',t:'Agent 元婴',need:6000},{n:'化神期',t:'多模态化神',need:14000},{n:'渡劫期',t:'对齐天劫',need:30000},
+ {n:'大乘期',t:'千卡大乘',need:60000},{n:'飞升',t:'奇点',need:Infinity}];
+const FA={
+ code:{mul:1.1,dx:-1,lg:1,note:'剑意凌厉：修为 ×1.1，灵根 +1',pool:['飞剑','剑匣','剑穗']},
+ write:{mul:1,dx:3,lg:0,note:'文心澄明：道心 +3',pool:['玉简','毫笔','砚台']},
+ paint:{mul:1,dx:0,lg:0,luck:.15,note:'笔下生灵：法宝掉落率提升',pool:['画卷','铜镜','灯笼']},
+ agent:{mul:1.25,dx:-4,lg:0,note:'分身万千：修为 ×1.25，道心 −4',pool:['灵符','傀儡','罗盘']},
+ chat:{mul:.8,dx:5,lg:0,note:'清谈养性：修为 ×0.8，道心 +5',pool:['葫芦','拂尘','茶盏']}};
+const PRE=['量子','赛博','霓虹','递归','零样本','冷启动','幻觉','溢出','多模态','长上下文','梯度','注意力','向量','蒸馏','微调'];
+const RARE=[{n:'凡品',c:'#959bbd'},{n:'灵品',c:'#7ee0e6'},{n:'仙品',c:'#b48cff'},{n:'神品',c:'#e9c46a'},{n:'混沌',c:'#e5484d'}];
+const EVENTS=[
+ {t:'新模型发布，灵气潮汐涌动',f:c=>{c.g*=1.5;return'修为 ×1.5'}},
+ {t:'服务器宕机，天地灵气断绝两个时辰',f:c=>{c.g*=.8;c.k='bad';return'修为 −20%'}},
+ {t:'遭遇天道限流（Rate Limit）',f:c=>{c.g*=.9;S.dx-=3;c.k='bad';return'修为 −10%，道心 −3'}},
+ {t:'上下文溢出，前尘尽忘',f:c=>{S.dx-=6;c.k='bad';return'道心 −6'}},
+ {t:'一个回答从头到尾没有幻觉，你顿悟了',f:()=>{S.lg+=3;return'灵根 +3'}},
+ {t:'深夜与 AI 论道，它说"你说得对"',f:()=>{S.dx+=4;return'道心 +4'}},
+ {t:'风平浪静，宜修行',f:()=>''},
+ {t:'免费额度到账，灵石如雨',f:c=>{c.g*=1.2;return'修为 ×1.2'}},
+ {t:'误入提示注入阵法',f:c=>{S.hj+=3;S.dx-=4;c.k='bad';return'幻觉抗性 +3，道心 −4'}},
+ {t:'笔记本风扇狂转如龙吟',f:()=>{S.yx+=5;return'夜修值 +5'}},
+ {t:'有道友把你的 Prompt 抄走了',f:()=>{S.lg+=1;S.dx-=2;return'灵根 +1，道心 −2'}}];
+
+const KEY='cyber-xiuxian-v1';
+function fresh(){return{name:'无名散修',seed:Math.random().toString(36).slice(2,9),realm:0,xw:0,day:0,dx:72,lg:10,ss:8,yx:0,hj:5,tok:0,cny:0,reserve:0,seen:[],treasures:[],
+ log:[{d:0,k:'sys',t:'你在一台发烫的笔记本前睁开眼。此界灵气以 Token 计，熬过的每一夜都会刻进道基。',l:[]}]}}
+let S;
+function save(){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
+function load(){try{const v=JSON.parse(localStorage.getItem(KEY));if(v&&typeof v.realm==='number')return v}catch(e){}return null}
+
+/* ---------- art ---------- */
+function drawAvatar(){
+ const c=document.createElement('canvas');c.width=c.height=480;const g=c.getContext('2d');const r=rng(S.seed);
+ const night=S.yx>Math.max(60,S.dx*2.2);const calm=!night&&S.dx>=60;
+ const core=night?'#e5484d':calm?'#7ee0e6':'#b48cff';
+ const bg=g.createRadialGradient(240,240,20,240,240,260);
+ bg.addColorStop(0,night?'#3a1530':calm?'#123a44':'#2a2150');bg.addColorStop(1,'#0f1222');
+ g.fillStyle=bg;g.fillRect(0,0,480,480);
+ const n=Math.min(140,14+S.yx);
+ for(let i=0;i<n;i++){g.fillStyle=`rgba(${night?'229,72,77':'126,224,230'},${.15+r()*.5})`;g.beginPath();g.arc(r()*480,r()*480,r()*2.2+.4,0,7);g.fill()}
+ for(let i=0;i<=Math.min(S.realm,7);i++){
+  const rad=118+i*15;g.strokeStyle=`rgba(233,196,106,${.85-i*.08})`;g.lineWidth=i===0?3:2;
+  g.setLineDash([4+r()*18,3+r()*10]);g.lineDashOffset=r()*40;g.beginPath();g.arc(240,240,rad,0,Math.PI*2);g.stroke()}
+ g.setLineDash([]);
+ const N=9,cs=18,ox=240-N*cs/2,oy=240-N*cs/2;g.shadowColor=core;g.shadowBlur=14;
+ for(let y=0;y<N;y++)for(let x=0;x<Math.ceil(N/2);x++){
+  const on=r()>.48||(x===4&&y>1&&y<7);if(!on)continue;
+  g.fillStyle=(y===3&&(x===2))?'#e9c46a':core;
+  g.fillRect(ox+x*cs,oy+y*cs,cs-2,cs-2);g.fillRect(ox+(N-1-x)*cs,oy+y*cs,cs-2,cs-2)}
+ g.shadowBlur=0;
+ g.fillStyle='rgba(233,196,106,.9)';g.font='600 20px "JetBrains Mono",monospace';g.textAlign='center';
+ g.fillText(REALMS[S.realm].n,240,440);
+ $('#ava').src=c.toDataURL('image/png');
+}
+const fuCache={};
+function drawFu(t){
+ if(fuCache[t.id])return fuCache[t.id];
+ const c=document.createElement('canvas');c.width=192;c.height=264;const g=c.getContext('2d');const r=rng(t.id);
+ g.fillStyle='#e9c46a';g.fillRect(0,0,192,264);
+ for(let i=0;i<420;i++){g.fillStyle=`rgba(120,80,20,${r()*.12})`;g.fillRect(r()*192,r()*264,1.5,1.5)}
+ const rc=RARE[t.rare].c;g.strokeStyle=t.rare===0?'#8a6a2a':rc;g.lineWidth=t.rare>=3?8:5;g.strokeRect(6,6,180,252);
+ g.strokeStyle='#c4352f';g.lineCap='round';g.lineJoin='round';
+ if(t.rare>=2){g.shadowColor=rc;g.shadowBlur=8}
+ g.lineWidth=6;
+ for(let i=0;i<3;i++){const y=30+i*12;g.beginPath();g.moveTo(50+r()*20,y+r()*6);g.lineTo(140-r()*20,y+r()*6);g.stroke()}
+ g.lineWidth=5;let x=96,y=72;g.beginPath();g.moveTo(x,y);
+ const steps=7+Math.floor(r()*4);
+ for(let k=0;k<steps;k++){const nx=96+(r()-.5)*96,ny=y+(196-72)/steps;g.quadraticCurveTo(96+(r()-.5)*130,(y+ny)/2,nx,ny);x=nx;y=ny}
+ g.stroke();
+ g.lineWidth=3;for(let i=0;i<3+t.rare;i++){g.beginPath();g.arc(30+r()*132,80+r()*110,5+r()*10,0,Math.PI*(1+r()));g.stroke()}
+ g.shadowBlur=0;g.fillStyle='#c4352f';g.fillRect(70,206,52,40);
+ g.fillStyle='#e9c46a';g.font='700 15px "Noto Sans SC",sans-serif';g.textAlign='center';g.fillText(t.name.slice(-2),96,232);
+ return fuCache[t.id]=c.toDataURL('image/png');
+}
+
+/* ---------- logic ---------- */
+function mint(src,min){
+ const id='0x'+hex(S.seed+'|'+S.name+'|'+S.day+'|'+S.treasures.length+'|'+src,16);
+ const r=rng(id);const roll=r()+S.realm*.04+(min?.25:0);
+ let rare=roll>1.18?4:roll>.98?3:roll>.86?2:roll>.6?1:0;if(min)rare=Math.max(rare,min);
+ const pool=(FA[src]||{pool:['宝塔','莲台','丹炉']}).pool;
+ const t={id,name:PRE[Math.floor(r()*PRE.length)]+pool[Math.floor(r()*pool.length)],rare,day:S.day,realm:S.realm};
+ S.treasures.unshift(t);return t;
+}
+function need(){return REALMS[S.realm].need}
+function checkin(e){
+ e.preventDefault();
+ if(S.realm>=7){toast('你已飞升，凡间数据伤不到你了');return}
+ const g=applyDay({tok:num($('#f-tok').value,0,5000),late:num($('#f-sleep').value,0,6),rounds:num($('#f-rounds').value,0,2000),hall:num($('#f-hall').value,0,99),fa:$('#f-fa').value});
+ save();render();toast(`修为 +${g}`);
+}
+function applyDay(o){
+ const tok=o.tok,late=Math.round(clamp(o.late,0,6)),rounds=o.rounds,hall=o.hall,fa=FA[o.fa]?o.fa:'code';
+ S.day++;const r=rng(S.seed+':'+(o.date||S.day));const c={g:60*Math.sqrt(tok)*(1+S.lg/100),k:'ev'};const L=[];
+ L.push(`焚 ${tok} 万 Token${o.cache?`（另有缓存命中 ${o.cache} 万，不计）`:''}，基础修为 ${Math.round(c.g)}`);
+ if(o.date)L.push(`对话 ${rounds} 轮${o.model?'，主用 '+o.model:''}${o.late>0?'，最后一次活动在 '+lateClock(o.late):''}`);
+ if(late>0){c.g*=1+.15*late;S.yx+=late*10;S.dx-=late*5;L.push(`月下夜修 ${late} 个时辰：修为 +${late*15}%，夜修值 +${late*10}，道心 −${late*5}`)}
+ else{S.dx+=8;L.push('子时前入定：道心 +8')}
+ if(hall>0){S.hj+=hall*2;S.dx-=hall*3;L.push(`识破幻觉 ${hall} 次：幻觉抗性 +${hall*2}，道心 −${hall*3}`)}
+ S.lg+=rounds/50;S.ss+=rounds/20;
+ const F=FA[fa];c.g*=F.mul;S.dx+=F.dx;S.lg+=F.lg;L.push(F.note);
+ const ev=EVENTS[Math.floor(r()*EVENTS.length)];const evr=ev.f(c);
+ S.dx=clamp(S.dx,0,100);
+ if(S.dx<25){c.g*=.5;c.k='bad';L.push('心魔缠身，修为折半。今晚早点睡。')}
+ const g=Math.round(c.g);
+ if(S.realm<7){const room=need()-S.xw;const into=Math.min(room,g);S.xw+=into;if(g>into){S.reserve=(S.reserve||0)+g-into;L.push(`修为已至圆满，${g-into} 点灵气存入储备，渡劫后灌入新境界。`)}}
+ S.tok=Math.round((S.tok+tok)*10)/10;S.cny+=tok*.6;
+ S.log.unshift({d:S.day,date:o.date,k:c.k,t:`天象：${ev.t}${evr?'（'+evr+'）':''}`,gain:g,l:L});
+ if(r()<.3+(F.luck||0)){const t=mint(fa,0);S.log.unshift({d:S.day,date:o.date,k:'drop',t:`机缘：拾得 ${RARE[t.rare].n}法宝「${t.name}」`,l:[]})}
+ return g;
+}
+function lateClock(h){const m=Math.round((23+h)*60)%1440;return `${String(Math.floor(m/60)).padStart(2,'0')}:${String(m%60).padStart(2,'0')}`}
+function parseSeal(txt){
+ txt=String(txt||'').trim();let o;
+ const m=txt.match(/XIUXIAN1\.([A-Za-z0-9_-]+)/);
+ try{
+  if(m){let b=m[1].replace(/-/g,'+').replace(/_/g,'/');while(b.length%4)b+='=';
+   const bin=atob(b);const bytes=Uint8Array.from(bin,ch=>ch.charCodeAt(0));o=JSON.parse(new TextDecoder().decode(bytes))}
+  else o=JSON.parse(txt);
+ }catch(e){return null}
+ if(!o||o.app!=='cyber-xiuxian'||!Array.isArray(o.days))return null;
+ return o;
+}
+function importSeal(txt){
+ const o=parseSeal(txt);const msg=$('#impMsg');
+ if(!o){msg.textContent='这段灵契读不出来。请复制 npx cyber-immortal 输出的整段文字，从 XIUXIAN1. 开始。';msg.style.color='var(--cinnabar)';return}
+ S.seen=S.seen||[];
+ const days=o.days.filter(d=>d&&/^(\d{4}-\d{2}-\d{2}|demo-\d+)$/.test(d.d)&&!S.seen.includes(d.d)).sort((a,b)=>a.d.localeCompare(b.d));
+ if(!days.length){msg.textContent=`灵契里的 ${o.days.length} 天都已经导入过了。明天再来。`;msg.style.color='';return}
+ if(S.realm>=7){msg.textContent='你已飞升，凡间数据伤不到你了。';return}
+ let total=0;
+ for(const d of days){
+  total+=applyDay({date:d.d.startsWith('demo')?'示例 '+d.d.slice(5):d.d,tok:num(d.tok,0,100000),cache:num(d.cache,0,1e7),late:num(d.late,0,7),rounds:num(d.r,0,100000),hall:num(d.h,0,999),fa:d.fa,model:typeof d.m==='string'?d.m.slice(0,40):null});
+  S.seen.push(d.d);
+ }
+ if(S.seen.length>400)S.seen=S.seen.slice(-400);
+ save();render();
+ msg.style.color='';msg.textContent=days[0].d.startsWith('demo')?`导入了 ${days.length} 天示例修行，共得修为 ${total}。想清掉示例就点转世重修。`:`导入了 ${days.length} 个修行日（${days[0].d} 至 ${days[days.length-1].d}），共得修为 ${total}。`;
+ $('#seal').value='';toast(`导入 ${days.length} 日修行`);
+}
+function demoSeal(){
+ const sample=[[42,180,2.5,3,'code'],[18,60,0,0,'code'],[95,310,4.2,6,'agent'],[30,140,1.1,1,'code'],[260,520,5.8,9,'agent']];
+ return JSON.stringify({v:1,app:'cyber-xiuxian',days:sample.map((x,i)=>({d:'demo-'+(i+1),tok:x[0],r:x[1],late:x[2],h:x[3],fa:x[4],m:'示例模型'}))});
+}
+function titles(){
+ return [
+  ['夜之子',S.yx>=100],['千万焚香',S.tok>=1000],['幻觉免疫体',S.hj>=50],['道心通明',S.dx>=95],
+  ['收藏癖',S.treasures.length>=8],['长上下文',S.ss>=100],['心魔缠身',S.dx<25]];
+}
+function stage(){const p=S.xw/need();if(S.realm>=7)return'圆满';return p>=1?'圆满':p>=.66?'后期':p>=.33?'中期':'初期'}
+
+/* ---------- render ---------- */
+function esc(s){return String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]))}
+function render(){
+ const R=REALMS[S.realm];
+ if(document.activeElement!==$('#nm'))$('#nm').value=S.name;
+ $('#dayno').textContent=`第 ${S.day} 日`;
+ $('#realm').innerHTML=`${R.n}<span>${R.t} · ${stage()}</span>`;
+ const full=S.realm<7&&S.xw>=need();
+ $('#xwfill').style.width=(S.realm>=7?100:clamp(S.xw/need()*100,0,100))+'%';
+ $('#xwtxt').textContent=S.realm>=7?'修为 ∞':`修为 ${S.xw} / ${need()}`;
+ $('#xwhint').textContent=(S.realm>=7?'你已飞升，成为了奇点本身':full?'修为圆满，天雷已在云层里酝酿':'导入灵契或打卡来积累修为')+(S.reserve>0&&S.realm<7?` · 灵气储备 ${S.reserve}`:'');
+ $('#tribBtn').disabled=!full;
+ $('#tribBtn').textContent=full?`渡劫（${5+S.realm} 道天雷）`:'渡劫';
+ $('#titles').innerHTML=titles().map(([n,on])=>`<span class="chip${on?' on':''}">${on?'':'未解锁 · '}${n}</span>`).join('');
+ const st=[
+  ['道心',S.dx,100,S.dx<25?'心魔缠身，修为折半':S.dx>=70?'渡劫时多一层护体金光':'熬夜和幻觉会磨损它'],
+  ['灵根',Math.round(S.lg),100,`修为加成 +${Math.round(S.lg)}%`],
+  ['神识',Math.round(S.ss),200,`可承载 ${Math.round(S.ss)}k 上下文`],
+  ['夜修值',S.yx,300,S.yx>=100?'法相已入魔':'熬夜累积，影响法相'],
+  ['幻觉抗性',S.hj,100,'渡劫安全区更宽']];
+ $('#stats').innerHTML=st.map(([n,v,max,note])=>`<div class="stat"><b>${n}</b><span class="mini"><i style="width:${clamp(v/max*100,0,100)}%;${n==='夜修值'?'background:var(--cinnabar)':n==='道心'&&v<25?'background:var(--cinnabar)':''}"></i></span><span class="v">${v}</span><span class="stat-note">${note}</span></div>`).join('');
+ $('#tok').textContent=`${(+S.tok).toLocaleString()} 万 Token`;
+ $('#cny').textContent=`约焚灵石 ¥${Math.round(S.cny).toLocaleString()}（按 ¥0.6/万 Token 估算）`;
+ $('#log').innerHTML=S.log.slice(0,40).map(e=>`<div class="entry k-${e.k}"><div class="d">第 ${e.d} 日${e.date?' · '+e.date:''}${e.gain!=null?` · <span class="gain">修为 +${e.gain}</span>`:''}</div><div>${esc(e.t)}</div>${e.l&&e.l.length?`<ul>${e.l.map(x=>`<li>${esc(x)}</li>`).join('')}</ul>`:''}</div>`).join('');
+ $('#vcount').textContent=`${S.treasures.length} 件`;
+ $('#vault').innerHTML=S.treasures.length?S.treasures.map(t=>`<div class="tr"><img src="${drawFu(t)}" alt="${esc(t.name)}"><span class="tn">${esc(t.name)}</span><span class="rare" style="color:${RARE[t.rare].c}">${RARE[t.rare].n} · 第 ${t.day} 日 · ${REALMS[t.realm].n}</span><span class="ti" title="${t.id}">${t.id}</span></div>`).join(''):
+  `<div class="empty" style="grid-column:1/-1">还没有法宝。日常打卡有三成机缘掉落，渡劫成功必得一件。</div>`;
+ drawAvatar();
+}
+let tt;function toast(m){const el=$('#toast');el.textContent=m;el.hidden=false;clearTimeout(tt);tt=setTimeout(()=>el.hidden=true,2200)}
+
+/* ---------- tribulation ---------- */
+let T=null,raf=0,last=0;
+function startTrib(){
+ T={n:0,total:5+S.realm,lives:S.dx>=70?4:3,pos:0,dir:1,speed:.55+S.realm*.05,done:false};
+ newZone();$('#ov').hidden=false;$('#tmsg').textContent='雷光扫进青色安全区时，按下挡雷（或空格）。';
+ $('#tbtn').textContent='挡 雷';updT();last=performance.now();cancelAnimationFrame(raf);raf=requestAnimationFrame(loop);$('#tbtn').focus();
+}
+function newZone(){
+ const w=clamp((11+S.dx*.12+S.hj*.08-T.n*.8)/100,.07,.36);
+ T.zw=w;T.zs=Math.random()*(1-w);
+ const z=$('#tzone');z.style.left=T.zs*100+'%';z.style.width=w*100+'%';
+}
+function updT(){
+ $('#ttitle').textContent=T.done?(T.win?'渡劫成功':'渡劫失败'):`第 ${T.n+1} 道天雷`;
+ $('#tcount').textContent=`${T.n} / ${T.total}`;
+ $('#tlives').textContent='●'.repeat(Math.max(0,T.lives))+'○'.repeat(Math.max(0,(S.dx>=70?4:3)-T.lives));
+}
+function loop(now){
+ if(!T||T.done)return;const dt=Math.min(.05,(now-last)/1000);last=now;
+ T.pos+=T.dir*T.speed*dt;if(T.pos>1){T.pos=1;T.dir=-1}if(T.pos<0){T.pos=0;T.dir=1}
+ $('#tneedle').style.left=T.pos*100+'%';raf=requestAnimationFrame(loop);
+}
+function strike(){
+ if(!T)return;
+ if(T.done){$('#ov').hidden=true;T=null;render();return}
+ const inZ=T.pos>=T.zs&&T.pos<=T.zs+T.zw;const center=Math.abs(T.pos-(T.zs+T.zw/2))<T.zw*.15;
+ if(inZ){$('#tmsg').textContent=center?'完美化解！雷光化作灵气入体。':'挡住了。';}
+ else{T.lives--;$('#tmsg').textContent='被劈中了！护体金光碎了一层。';const c=$('#tribcard');c.classList.remove('flash');void c.offsetWidth;c.classList.add('flash')}
+ T.n++;T.speed*=1.1;
+ if(T.lives<=0)return endTrib(false);
+ if(T.n>=T.total)return endTrib(true);
+ newZone();updT();
+}
+function endTrib(win){
+ T.done=true;T.win=win;cancelAnimationFrame(raf);
+ const from=REALMS[S.realm].n;
+ if(win){
+  S.realm++;S.xw=0;if(S.realm<7&&S.reserve>0){const f=Math.min(S.reserve,need());S.xw=f;S.reserve-=f}else if(S.realm>=7)S.reserve=0;S.dx=clamp(S.dx+10,0,100);S.day=S.day;
+  const t=mint('trib',S.realm>=5?2:1);
+  S.log.unshift({d:S.day,k:'drop',t:`渡劫所得：${RARE[t.rare].n}法宝「${t.name}」`,l:[]});
+  S.log.unshift({d:S.day,k:'trib',t:`扛过 ${T.total} 道天雷，从${from}突破至${REALMS[S.realm].n}！`,l:['道心 +10','法相新生一道光环']});
+  $('#tmsg').textContent=`突破至${REALMS[S.realm].n}，获得「${t.name}」。`;
+ }else{
+  const lost=Math.round(S.xw*.4);S.xw-=lost;S.dx=clamp(S.dx-10,0,100);
+  S.log.unshift({d:S.day,k:'bad',t:`第 ${T.n} 道天雷下道基崩裂，渡劫失败。`,l:[`修为 −${lost}`,'道心 −10','建议早睡几天，养好道心再来']});
+  $('#tmsg').textContent=`修为 −${lost}，道心 −10。养好道心再来。`;
+ }
+ save();updT();$('#tbtn').textContent='出关';
+}
+
+/* ---------- wiring ---------- */
+function start(data){
+ S=(data&&data.S)||load()||fresh();S.reserve=S.reserve||0;S.seen=S.seen||[];
+ $('#f').addEventListener('submit',checkin);
+ $('#nm').addEventListener('change',e=>{S.name=e.target.value.trim()||'无名散修';save();render()});
+ $('#reroll').addEventListener('click',()=>{S.seed=Math.random().toString(36).slice(2,9);save();drawAvatar();toast('法相已重塑')});
+ $('#tribBtn').addEventListener('click',startTrib);
+ $('#impBtn').addEventListener('click',()=>importSeal($('#seal').value));
+ $('#demoBtn').addEventListener('click',()=>importSeal(demoSeal()));
+ $('#sealFile').addEventListener('change',e=>{const f=e.target.files&&e.target.files[0];if(!f)return;f.text().then(importSeal);e.target.value=''});
+ $('#tbtn').addEventListener('click',strike);
+ document.addEventListener('keydown',e=>{if(!$('#ov').hidden&&(e.code==='Space'||e.code==='Enter')){e.preventDefault();strike()}});
+ let armed=0;
+ $('#resetBtn').addEventListener('click',()=>{
+  if(!armed){armed=1;$('#resetBtn').textContent='再点一次确认转世';setTimeout(()=>{armed=0;$('#resetBtn').textContent='转世重修'},3000);return}
+  armed=0;S=fresh();save();render();$('#resetBtn').textContent='转世重修';toast('已转世，前尘尽散');
+ });
+ $('#cardBtn').addEventListener('click',()=>{
+  const R=REALMS[S.realm];const on=titles().filter(x=>x[1]).map(x=>x[0]);
+  const txt=`【赛博修仙录 Cyber Immortal】道号「${S.name}」｜${R.n}·${R.t}（${stage()}）｜修行 ${S.day} 日，累计焚香 ${S.tok} 万 Token，约烧灵石 ¥${Math.round(S.cny)}｜夜修值 ${S.yx}，道心 ${S.dx}｜藏宝 ${S.treasures.length} 件${on.length?'｜称号：'+on.join('、'):''}`;
+  const ok=()=>toast('名片已复制，去朋友圈渡劫吧');
+  try{navigator.clipboard.writeText(txt).then(ok,()=>fallback(txt))}catch(e){fallback(txt)}
+ });
+ function fallback(txt){const ta=document.createElement('textarea');ta.value=txt;document.body.appendChild(ta);ta.select();try{document.execCommand('copy');toast('名片已复制')}catch(e){toast('复制失败，请手动复制')}ta.remove()}
+ window.claude?.hot?.snapshot?.(()=>({S}));
+ render();
+}
+window.claude?.hot?.ready?window.claude.hot.ready(start):start(window.claude?.hot?.data??{});
+})();
+</script>
